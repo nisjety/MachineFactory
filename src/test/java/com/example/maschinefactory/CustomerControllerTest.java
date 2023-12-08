@@ -1,33 +1,23 @@
 package com.example.maschinefactory;
 
 
-import com.example.maschinefactory.customer.Customer;
-import com.example.maschinefactory.customer.CustomerController;
-import com.example.maschinefactory.customer.CustomerNotFound;
-import com.example.maschinefactory.customer.CustomerRepository;
+import com.example.maschinefactory.customer.*;
 import com.example.maschinefactory.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import javax.print.DocFlavor;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CustomerController.class)
@@ -39,6 +29,9 @@ public class CustomerControllerTest {
 
     @MockBean
     private CustomerRepository customerRepository;
+
+    @MockBean
+    private CustomerService customerService;
 
     private List<Customer> customers;
 
@@ -114,7 +107,7 @@ public class CustomerControllerTest {
     @Test
     @WithMockUser
     void shouldGetCustomerNotExists() throws Exception {
-        when(customerRepository.findById(99L)).thenThrow(CustomerNotFound.class);
+        when(customerRepository.findById(99L)).thenThrow(CustomerNotFoundException.class);
         mockMvc.perform(get("/api/customers/99"))
                 .andExpect(status().isNotFound());
     }
@@ -159,4 +152,35 @@ public class CustomerControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldUpdateCustomerIfValidInput() throws Exception {
+        Customer updated = new Customer(2L, "john", "UpdatedTest2@example.com", "UpdatedPassword2", "Updated123456789", true);
+        when(customerRepository.save(updated)).thenReturn(updated);
+        when(customerRepository.findById(2L)).thenReturn(Optional.of(updated));
+        String requestBody = "{"
+                + "\"customerId\":" + updated.getCustomerId() + ","
+                + "\"name\":\"" + updated.getName() + "\","
+                + "\"email\":\"" + updated.getEmail() + "\","
+                + "\"password\":\"" + updated.getPassword() + "\","
+                + "\"phoneNumber\":\"" + updated.getPhoneNumber() + "\","
+                + "\"active\":" + updated.isActive()
+                + "}";
+
+        mockMvc.perform(put("/api/customers/2")
+                        .contentType("application/json")
+                        .content(requestBody))
+                .andExpect(status().isOk());
+    }
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldDeleteCustomerIfCustomerEmailValid() throws Exception {
+        Customer customer = new Customer(3, "karma", "test3@example.com", "password3", "223456789", false);
+        when(customerRepository.findByEmail("test3@example.com")).thenReturn(Optional.of(customer));
+        when(customerService.validatePassword(customer, "password3")).thenReturn(true);
+
+        mockMvc.perform(delete("/api/customers/test3@example.com")
+                        .param("password", "password3"))
+                .andExpect(status().isNoContent());
+    }
 }
