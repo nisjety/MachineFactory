@@ -1,9 +1,9 @@
 package com.example.maschinefactory.customer;
 
 import jakarta.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "customer")
@@ -27,15 +27,15 @@ public class Customer {
     @Column(name = "password")
     private String password;
 
+    @NotBlank(message = "Phone number cannot be blank")
     @Column(name = "phoneNumber")
-    private String phoneNumber; // Ensure this is the correct data type
+    private String phoneNumber;
 
     @Column(name = "active")
     private boolean active;
 
-    // No-arg constructor
+    // No-arg constructor for JPA
     public Customer() {
-        // JPA requires a no-arg constructor
     }
 
     /*

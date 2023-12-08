@@ -32,6 +32,9 @@ public class CustomerDataLoader implements CommandLineRunner {
             try (InputStream inputStream = TypeReference.class.getResourceAsStream(customerJson)) {
                 Customers response = objectMapper.readValue(inputStream, Customers.class);
                 customerRepository.saveAll(response.customers());
+                if (inputStream == null) {
+                    throw new RuntimeException("Cannot find file: " + customerJson);
+                }
             } catch (IOException e) {
                 LOG.error("Failed to read JSON data", e);
                 throw new RuntimeException("Failed to read JSON data", e);

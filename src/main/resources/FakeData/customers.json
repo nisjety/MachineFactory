@@ -1,0 +1,28 @@
+{
+  "customers": [
+    {
+      "customerId": 1,
+      "name": "ole",
+      "email": "test1@example.com",
+      "password": "password",
+      "phoneNumber": "023456789",
+      "active": true
+    },
+    {
+      "customerId": 2,
+      "name": "john",
+      "email": "test2@example.com",
+      "password": "password2",
+      "phoneNumber": "123456789",
+      "active": true
+    },
+    {
+      "customerId": 3,
+      "name": "karma",
+      "email": "test3@example.com",
+      "password": "password3",
+      "phoneNumber": "223456789",
+      "active": false
+    }
+  ]
+}
