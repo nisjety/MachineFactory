@@ -1,4 +1,4 @@
-package com.example.maschinefactory.domains;
+package com.example.maschinefactory.customer;
 
 import jakarta.persistence.*;
 import javax.validation.constraints.Email;
@@ -11,7 +11,7 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long userId;
+    private long customerId;
 
     @NotBlank(message = "Name cannot be blank")
     @Column(name = "name")
@@ -27,8 +27,8 @@ public class Customer {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "number")
-    private String number; // Ensure this is the correct data type
+    @Column(name = "phoneNumber")
+    private String phoneNumber; // Ensure this is the correct data type
 
     @Column(name = "active")
     private boolean active;
@@ -45,38 +45,30 @@ public class Customer {
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
         name = "customer_address",
-        joinColumns = @JoinColumn(name = "userId"),
+        joinColumns = @JoinColumn(name = "customerId"),
         inverseJoinColumns = @JoinColumn(name = "addressId")
     )
     private List<Address> addresses;
     */
 
-    public Customer(long userId, String name, String email, String password, String number, boolean active) {
-        this.userId = userId;
+    public Customer(long customerId, String name, String email, String password, String phoneNumber, boolean active) {
+        this.customerId = customerId;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.number = number;
-        this.active = active;
-    }
-
-    public Customer(String name, String email, String password, String number, boolean active) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.number = number;
+        this.phoneNumber = phoneNumber;
         this.active = active;
     }
 
 
     // Getters and Setters
 
-    public long getUserId() {
-        return userId;
+    public long getCustomerId() {
+        return customerId;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 
     public String getName() {
@@ -103,12 +95,12 @@ public class Customer {
         this.password = password;
     }
 
-    public String getNumber() {
-        return number;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public boolean isActive() {
@@ -138,7 +130,7 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "Customer [userId=" + userId + ", name=" + name + ", email=" + email + ", password=" + password + ", number="
-                + number + ", active=" + active + "]";
+        return "Customer [customerId=" + customerId + ", name=" + name + ", email=" + email + ", password=" + password + ", phoneNumber="
+                + phoneNumber + ", active=" + active + "]";
     }
 }
