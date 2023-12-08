@@ -1,0 +1,52 @@
+@startuml
+
+class Customer {
+  - customerId: Long
+  - name: String
+  - email: String
+  + List<Order> orders
+  + List<Address> addresses
+}
+
+class Address {
+  - addressId: Long
+  - street: String
+  - city: String
+  - zipCode: String
+  + List<Customer> customers
+}
+
+class Order {
+  - orderId: Long
+  - orderDate: Date
+  - status: String
+  + Customer customer
+  + List<Machine> machines
+}
+
+class Machine {
+  - machineId: Long
+  - type: String
+  - model: String
+  + List<Subassembly> subassemblies
+}
+
+class Subassembly {
+  - subassemblyId: Long
+  - name: String
+  + List<Part> parts
+}
+
+class Part {
+  - partId: Long
+  - partName: String
+  - manufacturer: String
+}
+
+Customer "1" -- "*" Address
+Customer "1" -- "*" Order
+Order "1" -- "*" Machine
+Machine "1" -- "*" Subassembly
+Subassembly "1" -- "*" Part
+
+@enduml

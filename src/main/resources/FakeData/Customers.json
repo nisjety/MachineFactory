@@ -1,0 +1,13 @@
+{
+  "Custommer": [
+    {
+      "user_Id": 1, "name": "ole", "email": "test1@example", "password": "password", "number": "023456789", "active": "true"
+    },
+    {
+      "user_Id": 2, "name": "john", "email": "test2@example.com", "password": "password2", "number": "123456789", "active": "true"
+    },
+    {
+      "user_Id": 3, "name": "karma", "email": "test3@example.com", "password": "password3", "number": "223456789", "active": "false"
+    }
+  ]
+}
