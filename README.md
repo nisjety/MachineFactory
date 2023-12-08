@@ -54,3 +54,4 @@ https://www.baeldung.com/spring-boot-h2-database
 https://www.bezkoder.com/spring-boot-jpa-h2-example/
 https://www.youtube.com/watch?v=-H5sud1-K5A
 https://my-json-server.typicode.com/
+https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/builders/HttpSecurity.html#csrf()
