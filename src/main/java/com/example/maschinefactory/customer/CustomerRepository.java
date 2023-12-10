@@ -17,6 +17,8 @@ public interface CustomerRepository extends CrudRepository<Customer, Long> {
 
     Optional<Customer> findByPhoneNumber(String phoneNumber);
 
-    Optional<Customer> deleteByEmail(String email);
+
+    void deleteByEmail(String email);
+
 
 }

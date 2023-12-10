@@ -1,6 +1,5 @@
 package com.example.maschinefactory;
 
-
 import com.example.maschinefactory.customer.*;
 import com.example.maschinefactory.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +26,6 @@ public class CustomerControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private CustomerRepository customerRepository;
-
-    @MockBean
     private CustomerService customerService;
 
     private List<Customer> customers;
@@ -38,12 +33,10 @@ public class CustomerControllerTest {
     @BeforeEach
     void setUp() {
         customers = List.of(
-                new Customer(1, "ole", "test1@example.com", "password", "023456789", true),
-                new Customer(2, "john", "test2@example.com", "password2", "123456789", true),
-                new Customer(3, "karma", "test3@example.com", "password3", "223456789", false)
+                new Customer(1L, "ole", "test1@example.com", "password", "023456789", true),
+                new Customer(2L, "john", "test2@example.com", "password2", "123456789", true),
+                new Customer(3L, "karma", "test3@example.com", "password3", "223456789", false)
         );
-
-        when(customerRepository.findAll()).thenReturn(customers);
     }
 
     @Test
@@ -77,8 +70,7 @@ public class CustomerControllerTest {
                     }
                   ]
                 """;
-        when(customerRepository.findAll()).thenReturn(customers);
-
+        when(customerService.findAllCustomers()).thenReturn(customers);
         mockMvc.perform(get("/api/customers"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
@@ -87,7 +79,7 @@ public class CustomerControllerTest {
     @Test
     @WithMockUser
     void shouldFindCustomerBasedOnId() throws Exception {
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customers.get(0)));
+        when(customerService.findCustomerById(1L)).thenReturn(Optional.of(customers.get(0)));
 
         var customer = customers.get(0);
         var json = "{"
@@ -107,7 +99,7 @@ public class CustomerControllerTest {
     @Test
     @WithMockUser
     void shouldGetCustomerNotExists() throws Exception {
-        when(customerRepository.findById(99L)).thenThrow(CustomerNotFoundException.class);
+        when(customerService.findCustomerById(99L)).thenThrow(CustomerNotFoundException.class);
         mockMvc.perform(get("/api/customers/99"))
                 .andExpect(status().isNotFound());
     }
@@ -115,15 +107,16 @@ public class CustomerControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldCreateNewCustomerIfCustomerValid() throws Exception {
-        var customer = new Customer(4L, "bole", "test4@example.com", "password4", "323456789", true);
-        when(customerRepository.save(customer)).thenReturn(customer);
+        Customer newCustomer = new Customer(4L, "bole", "test4@example.com", "password4", "323456789", true);
+        when(customerService.createCustomer(any(Customer.class))).thenReturn(newCustomer);
+
         String json = "{"
-                + "\"customerId\":" + customer.getCustomerId() + ","
-                + "\"name\":\"" + customer.getName() + "\","
-                + "\"email\":\"" + customer.getEmail() + "\","
-                + "\"password\":\"" + customer.getPassword() + "\","
-                + "\"phoneNumber\":\"" + customer.getPhoneNumber() + "\","
-                + "\"active\":" + customer.isActive()
+                + "\"customerId\": 4,"
+                + "\"name\": \"bole\","
+                + "\"email\": \"test4@example.com\","
+                + "\"password\": \"password4\","
+                + "\"phoneNumber\": \"323456789\","
+                + "\"active\": true"
                 + "}";
 
         mockMvc.perform(post("/api/customers")
@@ -145,7 +138,6 @@ public class CustomerControllerTest {
                 "active": true
             }
             """;
-
         mockMvc.perform(post("/api/customers")
                         .contentType("application/json")
                         .content(json))
@@ -154,33 +146,65 @@ public class CustomerControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
+    void shouldNotCreateCustomerIfEmpty() throws Exception {
+        mockMvc.perform(post("/api/customers")
+                        .contentType("application/json")
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldUpdateCustomerIfValidInput() throws Exception {
-        Customer updated = new Customer(2L, "john", "UpdatedTest2@example.com", "UpdatedPassword2", "Updated123456789", true);
-        when(customerRepository.save(updated)).thenReturn(updated);
-        when(customerRepository.findById(2L)).thenReturn(Optional.of(updated));
-        String requestBody = "{"
-                + "\"customerId\":" + updated.getCustomerId() + ","
-                + "\"name\":\"" + updated.getName() + "\","
-                + "\"email\":\"" + updated.getEmail() + "\","
-                + "\"password\":\"" + updated.getPassword() + "\","
-                + "\"phoneNumber\":\"" + updated.getPhoneNumber() + "\","
-                + "\"active\":" + updated.isActive()
+        Customer updatedCustomer = new Customer(2L, "john", "UpdatedTest2@example.com", "UpdatedPassword2", "Updated123456789", true);
+        when(customerService.updateCustomer(eq(2L), any(Customer.class))).thenReturn(updatedCustomer);
+
+        String json = "{"
+                + "\"customerId\": 2,"
+                + "\"name\": \"john\","
+                + "\"email\": \"UpdatedTest2@example.com\","
+                + "\"password\": \"UpdatedPassword2\","
+                + "\"phoneNumber\": \"Updated123456789\","
+                + "\"active\": true"
                 + "}";
 
         mockMvc.perform(put("/api/customers/2")
                         .contentType("application/json")
-                        .content(requestBody))
+                        .content(json))
                 .andExpect(status().isOk());
     }
+
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldDeleteCustomerIfCustomerEmailValid() throws Exception {
-        Customer customer = new Customer(3, "karma", "test3@example.com", "password3", "223456789", false);
-        when(customerRepository.findByEmail("test3@example.com")).thenReturn(Optional.of(customer));
-        when(customerService.validatePassword(customer, "password3")).thenReturn(true);
+        doNothing().when(customerService).deleteCustomer("test3@example.com", "password3");
 
         mockMvc.perform(delete("/api/customers/test3@example.com")
                         .param("password", "password3"))
                 .andExpect(status().isNoContent());
     }
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldDeleteCustomerIfPasswordValid() throws Exception {
+        doNothing().when(customerService).deleteCustomer("test3@example.com", "password3");
+
+        mockMvc.perform(delete("/api/customers/test3@example.com")
+                        .param("password", "password3"))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).deleteCustomer("test3@example.com", "password3");
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldNotDeleteCustomerIfPasswordInvalid() throws Exception {
+        doThrow(new InvalidPasswordException()).when(customerService).deleteCustomer("test3@example.com", "wrongPassword");
+
+        mockMvc.perform(delete("/api/customers/test3@example.com")
+                        .param("password", "wrongPassword"))
+                .andExpect(status().isUnauthorized());
+
+        verify(customerService).deleteCustomer("test3@example.com", "wrongPassword");
+    }
+
 }
