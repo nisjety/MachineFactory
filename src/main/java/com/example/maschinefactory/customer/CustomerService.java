@@ -1,5 +1,7 @@
 package com.example.maschinefactory.customer;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,24 +22,25 @@ public class CustomerService {
         this.customerValidation = customerValidation;
     }
 
-    public Iterable<Customer> findAllCustomers() {
-        return customerRepository.findAll();
+    public Page<Customer> findAllCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable);
     }
+
 
     public Optional<Customer> findCustomerById(Long id) {
         return customerRepository.findById(id);
     }
 
-    public List<Customer> findCustomersByName(String name) {
-        return customerRepository.findByName(name);
+    public Page<Customer> findCustomersByName(String name, Pageable pageable) {
+        return customerRepository.findByName(name, pageable);
     }
 
     public Optional<Customer> findCustomerByEmail(String email) {
         return customerRepository.findByEmail(email);
     }
 
-    public List<Customer> findCustomersByActiveStatus(boolean isActive) {
-        return customerRepository.findByActive(isActive);
+    public Page<Customer> findCustomersByActiveStatus(boolean isActive, Pageable pageable) {
+        return customerRepository.findByActive(isActive, pageable);
     }
 
     public Optional<Customer> findCustomersByPhoneNumber(String phoneNumber) {
@@ -87,7 +90,7 @@ public class CustomerService {
         customerValidation.validateCustomerCredentials(email, password);
         customerRepository.deleteByEmail(email);
     }
-
+}
 
     /*
     public void addOrderToCustomer(Long customerId, Order order) {
@@ -106,4 +109,4 @@ public class CustomerService {
     }
 
      */
-}
+

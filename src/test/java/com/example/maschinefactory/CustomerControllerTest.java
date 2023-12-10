@@ -8,12 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -42,38 +49,20 @@ public class CustomerControllerTest {
     @Test
     @WithMockUser
     void shouldFindAllUsers() throws Exception {
-        String jsonResponse = """
-                [
-                    {
-                      "customerId": 1,
-                      "name": "ole",
-                      "email": "test1@example.com",
-                      "password": "password",
-                      "phoneNumber": "023456789",
-                      "active": true
-                    },
-                    {
-                      "customerId": 2,
-                      "name": "john",
-                      "email": "test2@example.com",
-                      "password": "password2",
-                      "phoneNumber": "123456789",
-                      "active": true
-                    },
-                    {
-                      "customerId": 3,
-                      "name": "karma",
-                      "email": "test3@example.com",
-                      "password": "password3",
-                      "phoneNumber": "223456789",
-                      "active": false
-                    }
-                  ]
-                """;
-        when(customerService.findAllCustomers()).thenReturn(customers);
-        mockMvc.perform(get("/api/customers"))
+        int page = 0;
+        int size = 2;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Customer> pagedResponse = new PageImpl<>(customers.subList(0, size), pageable, customers.size());
+
+        when(customerService.findAllCustomers(pageable)).thenReturn(pagedResponse);
+
+        mockMvc.perform(get("/api/customers")
+                        .param("page", String.valueOf(page))
+                        .param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(jsonResponse));
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.totalPages", is(2)))
+                .andExpect(jsonPath("$.totalElements", is(customers.size())));
     }
 
     @Test
@@ -103,6 +92,52 @@ public class CustomerControllerTest {
         mockMvc.perform(get("/api/customers/99"))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    @WithMockUser
+    void testFindCustomersByName() {
+        Page<Customer> pagedResponse = new PageImpl<>(customers);
+        when(customerService.findCustomersByName(anyString(), any(Pageable.class))).thenReturn(pagedResponse);
+
+        Page<Customer> result = customerService.findCustomersByName("testName", PageRequest.of(0, 10));
+
+        assertThat(result.getContent()).isEqualTo(customers);
+        // Additional assertions as necessary
+    }
+
+    @Test
+    @WithMockUser
+    void testFindCustomerByEmail() {
+        Optional<Customer> expectedCustomer = Optional.of(customers.get(0));
+        when(customerService.findCustomerByEmail(anyString())).thenReturn(expectedCustomer);
+
+        Optional<Customer> result = customerService.findCustomerByEmail("test1@example.com");
+
+        assertThat(result).isEqualTo(expectedCustomer);
+    }
+
+    @Test
+    @WithMockUser
+    void testFindCustomersByActiveStatus() {
+        Page<Customer> pagedResponse = new PageImpl<>(customers);
+        when(customerService.findCustomersByActiveStatus(anyBoolean(), any(Pageable.class))).thenReturn(pagedResponse);
+
+        Page<Customer> result = customerService.findCustomersByActiveStatus(true, PageRequest.of(0, 10));
+
+        assertThat(result.getContent()).isEqualTo(customers);
+        // Additional assertions as necessary
+    }
+
+    @Test
+    @WithMockUser
+    void testFindCustomersByPhoneNumber() {
+        Optional<Customer> expectedCustomer = Optional.of(customers.get(0));
+        when(customerService.findCustomersByPhoneNumber(anyString())).thenReturn(expectedCustomer);
+
+        Optional<Customer> result = customerService.findCustomersByPhoneNumber("023456789");
+
+        assertThat(result).isEqualTo(expectedCustomer);
+    }
+
 
     @Test
     @WithMockUser(roles = "ADMIN")

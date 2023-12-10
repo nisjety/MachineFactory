@@ -1,5 +1,7 @@
 package com.example.maschinefactory.customer;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,9 +20,10 @@ public class CustomerController {
     }
 
     @GetMapping("")
-    Iterable<Customer> findAll() {
-        return customerService.findAllCustomers();
+    public Page<Customer> findAll(Pageable pageable) {
+        return customerService.findAllCustomers(pageable);
     }
+
 
     @GetMapping("/{customerId}")
     public ResponseEntity<Customer> findCustomerById(@PathVariable Long customerId) {
