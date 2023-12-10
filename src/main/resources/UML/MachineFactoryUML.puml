@@ -13,7 +13,6 @@ class Address {
   - street: String
   - city: String
   - zipCode: String
-  + Customer customer
   + List<Customer> customers
 }
 
@@ -22,6 +21,7 @@ class Order {
   - orderDate: Date
   - status: String
   + Customer customer
+  + Address deliveryAddress
   + List<Machine> machines
 }
 
@@ -46,7 +46,8 @@ class Part {
 
 Customer "1" -- "*" Address
 Customer "1" -- "*" Order
-Address "1" -- "*" Customer
+Address "*" -- "*" Customer
+Order "1" -- "1" Address
 Order "1" -- "*" Machine
 Machine "1" -- "*" Subassembly
 Subassembly "1" -- "*" Part

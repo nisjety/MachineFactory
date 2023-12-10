@@ -5,7 +5,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.example.maschinefactory.address.Address;
+import com.example.maschinefactory.order.Order;
+
+import java.util.List;
 
 @Entity
 @Table(name = "customer")
@@ -34,14 +37,13 @@ public class Customer {
     @Column(name = "phoneNumber")
     private String phoneNumber;
 
-    @Column(name = "active")
+    @Column(name = "status")
     private boolean active;
 
     // No-arg constructor for JPA
     public Customer() {
     }
 
-    /*
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Order> orders;
 
@@ -51,8 +53,7 @@ public class Customer {
         joinColumns = @JoinColumn(name = "customerId"),
         inverseJoinColumns = @JoinColumn(name = "addressId")
     )
-    private List<Address> addresses;
-    */
+    private List<Address> addresses ;
 
     public Customer(long customerId, String name, String email, String password, String phoneNumber, boolean active) {
         this.customerId = customerId;
@@ -114,7 +115,7 @@ public class Customer {
         this.active = active;
     }
 
-    /*public List<Order> getOrders() {
+    public List<Order> getOrders() {
         return orders;
     }
 
@@ -129,7 +130,6 @@ public class Customer {
     public void setAddresses(List<Address> addresses) {
         this.addresses = addresses;
     }
-    */
 
     @Override
     public String toString() {
