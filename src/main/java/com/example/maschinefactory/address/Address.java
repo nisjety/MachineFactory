@@ -23,7 +23,7 @@ public class Address {
 
 
     @NotBlank(message = "Street cannot be blank")
-    @Column(name = "street")
+    @Column(name = "Street")
     private String street;
 
     @NotBlank(message = "city cannot be blank")
@@ -63,11 +63,11 @@ public class Address {
         this.addressId = addressId;
     }
 
-    public int getZipCode() {
+    public int getZip() {
         return zip;
     }
 
-    public void setZipCode(int zip) {
+    public void setZip(int zip) {
         this.zip = zip;
     }
 

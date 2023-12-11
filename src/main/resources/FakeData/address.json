@@ -1,0 +1,25 @@
+{
+  "addresses": [
+    {
+      "addressId": 1,
+      "street": "1 Main St",
+      "city": "Randomcity1",
+      "zipCode": "1234",
+      "country": "USA"
+    },
+    {
+      "addressId": 2,
+      "street": "2 Main St",
+      "city": "Randomcity2",
+      "zipCode": "5678",
+      "country": "Norway"
+    },
+    {
+      "addressId": 3,
+      "street": "3 Main St",
+      "city": "Randomcity3",
+      "zipCode": "9876",
+      "country": "Italia"
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 package com.example.maschinefactory;
 
+import com.example.maschinefactory.address.*;
 import com.example.maschinefactory.customer.*;
+import com.example.maschinefactory.order.Order;
 import com.example.maschinefactory.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,8 @@ public class CustomerControllerTest {
 
     private List<Customer> customers;
 
+    private List<Address> addresses;
+
     @BeforeEach
     void setUp() {
         customers = List.of(
@@ -44,7 +48,15 @@ public class CustomerControllerTest {
                 new Customer(2L, "john", "test2@example.com", "password2", "123456789", true),
                 new Customer(3L, "karma", "test3@example.com", "password3", "223456789", false)
         );
+
+        addresses = List.of(
+                new Address(1L,1234, "Randomcity1","1 Main_St", "USA"),
+                new Address(2L,5679, "Randomcity2","2 Main_St", "Norway"),
+                new Address(3L,9876, "Randomcity3","3 Main_St", "Italia")
+
+        );
     }
+
 
     @Test
     @WithMockUser
@@ -124,7 +136,6 @@ public class CustomerControllerTest {
         Page<Customer> result = customerService.findCustomersByActiveStatus(true, PageRequest.of(0, 10));
 
         assertThat(result.getContent()).isEqualTo(customers);
-        // Additional assertions as necessary
     }
 
     @Test
@@ -206,7 +217,7 @@ public class CustomerControllerTest {
         mockMvc.perform(put("/api/customers/2")
                         .contentType("application/json")
                         .content(json))
-                .andExpect(status().isOk());
+                .andExpect(status().isAccepted());
     }
 
     @Test
@@ -241,5 +252,90 @@ public class CustomerControllerTest {
 
         verify(customerService).deleteCustomer("test3@example.com", "wrongPassword");
     }
+
+    @Test
+    @WithMockUser
+    void shouldGetAddressesForCustomer() throws Exception {
+        List<Address> addresses = List.of( new Address(1L,1234, "Randomcity1","1 Main_St", "USA"));
+        when(customerService.getAddressForCustomer(1L)).thenReturn(addresses);
+
+        mockMvc.perform(get("/api/customers/1/addresses"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(addresses.size())));
+    }
+/*
+    @Test
+    @WithMockUser
+    void shouldGetOrdersForCustomer() throws Exception {
+        List<Order> orders = List.of(new Order(order details));
+        when(customerService.getOrdersForCustomer(1L)).thenReturn(orders);
+
+        mockMvc.perform(get("/api/customers/1/orders"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(orders.size())));
+    }
+
+
+    @Test
+    @WithMockUser
+    void shouldAddOrderToCustomer() throws Exception {
+        Order order = new Order(order details );
+        Customer customer = new Customer(customer details);
+        when(customerService.addOrderToCustomer(eq(1L), any(Order.class))).thenReturn(customer);
+
+        String orderJson = JSON representation of order ;
+        mockMvc.perform(put("/api/customers/1/orders")
+                        .contentType("application/json")
+                        .content(orderJson))
+                .andExpect(status().isOk());
+    }
+    */
+
+    @Test
+    @WithMockUser
+    void shouldAddAddressToCustomer() throws Exception {
+        Address address =  new Address(1L,1234, "Randomcity1","1 Main_St", "USA");
+
+        Customer customer = new Customer(2L, "john", "test2@example.com", "password2", "123456789", true);
+        when(customerService.addAddressToCustomer(eq(1L), any(Address.class))).thenReturn(customer);
+
+        String addressJson ="""
+    {
+        "addressId": 1,
+        "street": "123 Main St",
+        "city": "Anytown",
+        "zipCode": "12345",
+        "country": "USA"
+    }
+    """;
+        mockMvc.perform(put("/api/customers/1/addresses")
+                        .contentType("application/json")
+                        .content(addressJson))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void shouldRemoveOrderFromCustomer() throws Exception {
+        doNothing().when(customerService).removeOrderFromCustomer(1L, 1L);
+
+        mockMvc.perform(delete("/api/customers/1/orders/1"))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).removeOrderFromCustomer(1L, 1L);
+    }
+
+    @Test
+    @WithMockUser
+    void shouldRemoveAddressFromCustomer() throws Exception {
+        doNothing().when(customerService).removeAddressFromCustomer(1L, 1L);
+
+        mockMvc.perform(delete("/api/customers/1/addresses/1"))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).removeAddressFromCustomer(1L, 1L);
+    }
+
+
 
 }

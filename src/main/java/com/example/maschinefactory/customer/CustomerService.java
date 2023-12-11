@@ -6,9 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,7 +62,7 @@ public class CustomerService {
             }
         }
     }
-
+    @Transactional
     public Customer updateCustomer(Long customerId, Customer customer) throws InvalidCustomerDataException {
         if (customerValidation.validateCustomerData(customer)) {
             Optional<Customer> existing = customerRepository.findById(customerId);
@@ -93,32 +95,56 @@ public class CustomerService {
         customerRepository.deleteByEmail(email);
     }
 
-    public void addOrderToCustomer(Long customerId, Order order) {
+    public List<Address> getAddressForCustomer(Long customerId) {
+        Optional<Customer> customer = customerRepository.findById(customerId);
+
+        if (customer.isPresent()) {
+            return new ArrayList<>(customer.get().getAddresses());
+        } else {
+            throw new CustomerNotFoundException();
+        }
+    }
+
+    public List<Order> getOrdersForCustomer(Long customerId) {
+        Optional<Customer> customer = customerRepository.findById(customerId);
+
+        if (customer.isPresent()) {
+            return new ArrayList<>(customer.get().getOrders());
+        } else {
+            throw new CustomerNotFoundException();
+        }
+    }
+
+
+
+    @Transactional
+    public Customer addOrderToCustomer(Long customerId, Order order) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(CustomerNotFoundException::new);
         customer.getOrders().add(order);
-        customerRepository.save(customer);
+        return customerRepository.save(customer);
     }
 
-    public void removeOrderFromCustomer(Long customerId, Long orderId) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(CustomerNotFoundException::new);
-        customer.getOrders().removeIf(order -> order.getOrderId().equals(orderId));
-        customerRepository.save(customer);
-    }
-
-    public void addAddressToCustomer(Long customerId, Address address) {
+    @Transactional
+    public Customer addAddressToCustomer(Long customerId, Address address) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(CustomerNotFoundException::new);
         customer.getAddresses().add(address);
-        customerRepository.save(customer);
+        return customerRepository.save(customer);
     }
 
-    public void removeAddressFromCustomer(Long customerId, Long addressId) {
+    @Transactional
+    public void removeOrderFromCustomer(Long customerId, long orderId) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(CustomerNotFoundException::new);
-        customer.getAddresses().removeIf(address -> address.getAddressId().equals(addressId));
-        customerRepository.save(customer);
+        customer.getOrders().removeIf(order -> order.getOrderId() == orderId);
+    }
+
+    @Transactional
+    public void removeAddressFromCustomer(Long customerId, long addressId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(CustomerNotFoundException::new);
+        customer.getAddresses().removeIf(address -> address.getAddressId() == addressId);
     }
 }
 

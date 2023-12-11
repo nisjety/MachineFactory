@@ -32,7 +32,6 @@ public class AddressController {
                 .map(ResponseEntity::ok)
                 .orElseThrow(AddressNotFoundException::new);
     }
-
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     Address createAddress(@RequestBody @Validated Address address) throws InvalidAddressDataException {
@@ -50,7 +49,7 @@ public class AddressController {
         List<Customer> customers = addressService.getCustomersFromAddress(addressId);
         return ResponseEntity.ok(customers);
     }
-
+/
     @GetMapping("/{addressId}/orders")
     public ResponseEntity<List<Order>> getOrdersForAddress(@PathVariable Long addressId) {
         List<Order> orders = addressService.getOrdersForAddress(addressId);
@@ -58,12 +57,12 @@ public class AddressController {
     }
 
     @PutMapping("/{addressId}/orders")
-    public addOrderToAddress(Long addressId, Order order) {
+    public addOrderToAddress(@PathVariable Long addressId, Order order) {
         Address address = addressService.findById(addressId);
     }
 
     @PutMapping("/{addressId}/customers")
-    public addCustomerToAddress(Long addressId, Customer customer) {
+    public addCustomerToAddress(@PathVariable Long addressId, Customer customer) {
         Address address = addressService.findById(addressId);
     }
 }
