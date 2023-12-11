@@ -18,8 +18,8 @@ public class Address {
     private long addressId;
 
     @NotBlank(message = "Zip code cannot be blank")
-    @Column(name = "Zip_Code")
-    private int zipCode;
+    @Column(name = "Zip")
+    private int zip;
 
 
     @NotBlank(message = "Street cannot be blank")
@@ -45,9 +45,9 @@ public class Address {
     public Address() {
     }
 
-    public Address(long addressId, int zipCode, String street, String city, String country) {
+    public Address(long addressId, int zip, String street, String city, String country) {
         this.addressId = addressId;
-        this.zipCode = zipCode;
+        this.zip = zip;
         this.street = street;
         this.city = city;
         this.country = country;
@@ -64,11 +64,11 @@ public class Address {
     }
 
     public int getZipCode() {
-        return zipCode;
+        return zip;
     }
 
-    public void setZipCode(int zipCode) {
-        this.zipCode = zipCode;
+    public void setZipCode(int zip) {
+        this.zip = zip;
     }
 
     public String getStreet() {
@@ -114,7 +114,7 @@ public class Address {
 
     @Override
     public String toString() {
-        return "Address [addressId=" + addressId + ", zipCode=" + zipCode + ", street=" + street + ", city=" + city + ", country="
+        return "Address [addressId=" + addressId + ", zip=" + zip + ", street=" + street + ", city=" + city + ", country="
                 + country + "]";
     }
 }

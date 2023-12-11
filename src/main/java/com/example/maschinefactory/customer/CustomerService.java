@@ -1,5 +1,7 @@
 package com.example.maschinefactory.customer;
 
+import com.example.maschinefactory.address.Address;
+import com.example.maschinefactory.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -90,13 +92,10 @@ public class CustomerService {
         customerValidation.validateCustomerCredentials(email, password);
         customerRepository.deleteByEmail(email);
     }
-}
 
-    /*
     public void addOrderToCustomer(Long customerId, Order order) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(CustomerNotFoundException::new);
-        // Assume 'orders' is a set of Order entities in Customer class
         customer.getOrders().add(order);
         customerRepository.save(customer);
     }
@@ -104,9 +103,23 @@ public class CustomerService {
     public void removeOrderFromCustomer(Long customerId, Long orderId) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(CustomerNotFoundException::new);
-        customer.getOrders().removeIf(order -> order.getId().equals(orderId));
+        customer.getOrders().removeIf(order -> order.getOrderId().equals(orderId));
         customerRepository.save(customer);
     }
 
-     */
+    public void addAddressToCustomer(Long customerId, Address address) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(CustomerNotFoundException::new);
+        customer.getAddresses().add(address);
+        customerRepository.save(customer);
+    }
+
+    public void removeAddressFromCustomer(Long customerId, Long addressId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(CustomerNotFoundException::new);
+        customer.getAddresses().removeIf(address -> address.getAddressId().equals(addressId));
+        customerRepository.save(customer);
+    }
+}
+
 
