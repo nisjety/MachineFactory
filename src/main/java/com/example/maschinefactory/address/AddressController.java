@@ -32,6 +32,7 @@ public class AddressController {
                 .map(ResponseEntity::ok)
                 .orElseThrow(AddressNotFoundException::new);
     }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     Address createAddress(@RequestBody @Validated Address address) throws InvalidAddressDataException {
@@ -49,20 +50,37 @@ public class AddressController {
         List<Customer> customers = addressService.getCustomersFromAddress(addressId);
         return ResponseEntity.ok(customers);
     }
-/
+
     @GetMapping("/{addressId}/orders")
     public ResponseEntity<List<Order>> getOrdersForAddress(@PathVariable Long addressId) {
         List<Order> orders = addressService.getOrdersForAddress(addressId);
         return ResponseEntity.ok(orders);
     }
 
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{addressId}/orders")
-    public addOrderToAddress(@PathVariable Long addressId, Order order) {
-        Address address = addressService.findById(addressId);
+    public void addOrderToAddress(@PathVariable Long addressId, Order order) {
+        Address address = addressService.addOrderToAddress(addressId, order);
     }
 
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{addressId}/customers")
-    public addCustomerToAddress(@PathVariable Long addressId, Customer customer) {
-        Address address = addressService.findById(addressId);
+    public void addCustomerToAddress(@PathVariable Long addressId, Customer customer) {
+        Address address = addressService.addCustomerToAddress(addressId, customer);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{addressId}/orders/{orderId}")
+    public ResponseEntity<?> removeOrderFromAddress(@PathVariable Long addressId, @PathVariable Long orderId) {
+        addressService.removeOrderFromAddress(addressId, orderId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{addressId}/customers/{customerId}")
+    public ResponseEntity<?> removeCustomerFromAddress(@PathVariable Long addressId, @PathVariable Long customerId) {
+        addressService.removeOrderFromAddress(addressId, customerId);
+        return ResponseEntity.noContent().build();
+
     }
 }

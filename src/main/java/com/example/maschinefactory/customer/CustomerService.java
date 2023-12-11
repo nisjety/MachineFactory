@@ -4,11 +4,9 @@ import com.example.maschinefactory.address.Address;
 import com.example.maschinefactory.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +86,6 @@ public class CustomerService {
         }
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{email}")
     public void deleteCustomer(String email, String password) {
         customerValidation.validateCustomerCredentials(email, password);

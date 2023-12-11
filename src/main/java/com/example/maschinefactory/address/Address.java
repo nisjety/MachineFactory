@@ -35,14 +35,14 @@ public class Address {
     private String country;
 
     @ManyToMany(mappedBy = "addresses", fetch = FetchType.LAZY)
-    private List<Customer> customers;
+    private static List<Customer> customers;
 
     @OneToMany(mappedBy = "deliveryAddress", fetch = FetchType.LAZY)
     private List<Order> orders;
 
 
     // No-arg constructor for JPA
-    public Address() {
+    public Address(long addressId, String city, String street, int zip, String country) {
     }
 
     public Address(long addressId, int zip, String street, String city, String country) {
@@ -95,7 +95,7 @@ public class Address {
         this.country = country;
     }
 
-    public List<Customer> getCustomers() {
+    public static List<Customer> getCustomers() {
         return customers;
     }
 

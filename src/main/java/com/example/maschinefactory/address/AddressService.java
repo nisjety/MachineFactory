@@ -1,17 +1,11 @@
 package com.example.maschinefactory.address;
 
-import com.example.maschinefactory.address.AddressRepository;
 import com.example.maschinefactory.customer.Customer;
-import com.example.maschinefactory.customer.CustomerNotFoundException;
-import com.example.maschinefactory.customer.InvalidCustomerDataException;
 import com.example.maschinefactory.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +16,14 @@ public class AddressService {
 
     private final AddressRepository addressRepository;
 
+    private final AddressValidation addressValidation;
 
-    public AddressService(AddressRepository addressRepository) {
+
+    public AddressService(AddressRepository addressRepository, AddressValidation addressValidation) {
         this.addressRepository = addressRepository;
+        this.addressValidation = addressValidation;
     }
+
 
     public Page<Address> findAllAddress(Pageable pageable) {
         return addressRepository.findAll(pageable);
@@ -74,7 +72,7 @@ public class AddressService {
         return addressRepository.findByCountryAndCity(country, city);
     }
 
-    public Customer createAddress(Address address) throws InvalidAddressDataException {
+    public Address createAddress(Address address) throws InvalidAddressDataException {
         if (addressValidation.validateAddressData(address)) {
             return addressRepository.save(address);
         } else {
@@ -87,16 +85,15 @@ public class AddressService {
     }
     @Transactional
     public Address updateAddress(Long addressId, Address address) throws InvalidAddressDataException {
-        if (addressValidation.validateCustomerData(address)) {
+        if (addressValidation.validateAddressData(address)) {
             Optional<Address> existing = addressRepository.findById(addressId);
             if (existing.isPresent()) {
                 Address updated = new Address(
                         existing.get().getAddressId(),
-                        address.getZip(),
-                        address.getStreet(),
-                        address.getCity(),
-                        address.getCountry()
-
+                        existing.get().getCity(),
+                        existing.get().getStreet(),
+                        existing.get().getZip(),
+                        existing.get().getCountry()
                 );
                 return addressRepository.save(updated);
             } else {
@@ -152,7 +149,7 @@ public class AddressService {
     @Transactional
     public void removeOrderFromAddress(Long addressId, long orderId) {
         Address address = addressRepository.findById(addressId)
-                .orElseThrow(CustomerNotFoundException::new);
+                .orElseThrow(AddressNotFoundException::new);
         address.getOrders().removeIf(order -> order.getOrderId() == orderId);
     }
 
@@ -160,6 +157,6 @@ public class AddressService {
     public void removeCustomerFromAddress(Long addressId, long customerId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(AddressNotFoundException::new);
-        address.getCustomers().removeIf(customer -> customer.getCustomerId() == customerId);
+        Address.getCustomers().removeIf(customer -> customer.getCustomerId() == customerId);
     }
 }

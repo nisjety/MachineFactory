@@ -69,26 +69,26 @@ public class CustomerController {
         List<Order> orders = customerService.getOrdersForCustomer(customerId);
         return ResponseEntity.ok(orders);
     }
-
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{customerId}/orders")
     public ResponseEntity<Customer> addOrderToCustomer(@PathVariable Long customerId, @RequestBody Order order) {
         Customer customer = customerService.addOrderToCustomer(customerId, order);
         return ResponseEntity.ok(customer);
     }
-
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{customerId}/addresses")
     public ResponseEntity<Customer> addAddressToCustomer(@PathVariable Long customerId, @RequestBody Address address) {
         Customer customer = customerService.addAddressToCustomer(customerId, address);
         return ResponseEntity.ok(customer);
     }
-
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{customerId}/orders/{orderId}")
     public ResponseEntity<?> removeOrderFromCustomer(@PathVariable Long customerId, @PathVariable Long orderId) {
         customerService.removeOrderFromCustomer(customerId, orderId);
         return ResponseEntity.noContent().build();
     }
 
-
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{customerId}/addresses/{addressId}")
     public ResponseEntity<?> removeAddressFromCustomer(@PathVariable Long customerId, @PathVariable Long addressId) {
         customerService.removeAddressFromCustomer(customerId, addressId);

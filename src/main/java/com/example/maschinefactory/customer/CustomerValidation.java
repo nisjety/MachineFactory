@@ -47,7 +47,6 @@ public class CustomerValidation {
         // Validation logic for existing customer
         customerRepository.findById(customerId)
                 .orElseThrow(CustomerNotFoundException::new);
-        // Add specific validations as needed
     }
 
     public void validateCustomerCredentials(String email, String password) {
