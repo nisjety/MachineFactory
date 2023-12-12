@@ -34,14 +34,25 @@ public class CustomerValidation {
     }
 
     private boolean isValidEmail(String email) {
-        // Add your email validation logic (e.g., using regex)
-        return Pattern.matches("your-email-regex", email);
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$"; // Simple regex pattern for email
+        return Pattern.matches(emailRegex, email);
     }
 
+
     private boolean isStrongPassword(String password) {
-        // Add your strong password validation logic
-        return Pattern.matches("your-password-regex", password);
+        String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        // Explanation:
+        // ^                 # start-of-string
+        // (?=.*[0-9])       # a digit must occur at least once
+        // (?=.*[a-z])       # a lower case letter must occur at least once
+        // (?=.*[A-Z])       # an upper case letter must occur at least once
+        // (?=.*[@#$%^&+=])  # a special character must occur at least once
+        // (?=\S+$)          # no whitespace allowed in the entire string
+        // .{8,}             # anything, at least eight places though
+        // $                 # end-of-string
+        return Pattern.matches(passwordRegex, password);
     }
+
 
     public void validateExistingCustomer(Long customerId, Customer updatedCustomer) {
         // Validation logic for existing customer

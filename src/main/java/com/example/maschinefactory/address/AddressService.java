@@ -64,6 +64,7 @@ public class AddressService {
     public Optional<Address> findAddressByCountry(String country) {
         return addressRepository.findByCountry(country);
     }
+
     public Optional<Address> findByCountryAndZip(String country, int zip) {
         return addressRepository.findByCountryAndZip(country, zip);
     }
@@ -84,14 +85,14 @@ public class AddressService {
         }
     }
     @Transactional
-    public Address updateAddress(Long addressId, Address address) throws InvalidAddressDataException {
-        if (addressValidation.validateAddressData(address)) {
+    public Address updateAddress(Long addressId, String street, String city, int zip, String country) throws InvalidAddressDataException {
+        if (addressValidation.validateAddressCredentials(addressId, street, city, zip, country)) {
             Optional<Address> existing = addressRepository.findById(addressId);
             if (existing.isPresent()) {
                 Address updated = new Address(
                         existing.get().getAddressId(),
-                        existing.get().getCity(),
                         existing.get().getStreet(),
+                        existing.get().getCity(),
                         existing.get().getZip(),
                         existing.get().getCountry()
                 );

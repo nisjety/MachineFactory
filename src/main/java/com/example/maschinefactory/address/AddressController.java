@@ -41,8 +41,8 @@ public class AddressController {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{addressId}")
-    Address updateAddress(@PathVariable Long addressId, @RequestBody @Validated Address address) throws InvalidAddressDataException {
-        return addressService.updateAddress(addressId, address);
+    Address updateAddress(@PathVariable Long addressId,String street, String city, int zip, String country, @RequestBody @Validated Address address) throws InvalidAddressDataException {
+        return addressService.updateAddress(addressId, street,  city,  zip, country);
     }
 
     @GetMapping("/{addressId}/customers")

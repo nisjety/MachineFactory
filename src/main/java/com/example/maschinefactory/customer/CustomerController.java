@@ -71,15 +71,14 @@ public class CustomerController {
     }
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{customerId}/orders")
-    public ResponseEntity<Customer> addOrderToCustomer(@PathVariable Long customerId, @RequestBody Order order) {
-        Customer customer = customerService.addOrderToCustomer(customerId, order);
-        return ResponseEntity.ok(customer);
+    Customer addOrderToCustomer(@PathVariable Long customerId, @RequestBody Order order) {
+        return customerService.addOrderToCustomer(customerId, order);
     }
+
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{customerId}/addresses")
-    public ResponseEntity<Customer> addAddressToCustomer(@PathVariable Long customerId, @RequestBody Address address) {
-        Customer customer = customerService.addAddressToCustomer(customerId, address);
-        return ResponseEntity.ok(customer);
+    Customer addAddressToCustomer(@PathVariable Long customerId, @RequestBody Address address) {
+        return customerService.addAddressToCustomer(customerId, address);
     }
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{customerId}/orders/{orderId}")

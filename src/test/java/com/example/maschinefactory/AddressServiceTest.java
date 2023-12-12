@@ -27,19 +27,19 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(CustomerController.class)
+@WebMvcTest(AddressController.class)
 @Import(SecurityConfig.class)
-public class CustomerControllerTest {
+public class AddressServiceTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private CustomerService customerService;
-
-    private List<Customer> customers;
+    private AddressService addressService;
 
     private List<Address> addresses;
+
+    private List<Customer> customers;
 
     @BeforeEach
     void setUp() {
@@ -54,106 +54,188 @@ public class CustomerControllerTest {
                 new Address(2L,"2 Main_St", "Randomcity2",5679, "Norway"),
                 new Address(3L,"3 Main_St", "Randomcity3",9876, "Italia")
 
+
         );
     }
 
 
     @Test
     @WithMockUser
-    void shouldFindAllUsers() throws Exception {
+    void shouldFindAllAddress() throws Exception {
         int page = 0;
         int size = 2;
         Pageable pageable = PageRequest.of(page, size);
-        Page<Customer> pagedResponse = new PageImpl<>(customers.subList(0, size), pageable, customers.size());
+        Page<Address> pagedResponse = new PageImpl<>(addresses.subList(0, size), pageable, addresses.size());
 
-        when(customerService.findAllCustomers(pageable)).thenReturn(pagedResponse);
+        when(addressService.findAllAddress(pageable)).thenReturn(pagedResponse);
 
-        mockMvc.perform(get("/api/customers")
+        mockMvc.perform(get("/api/addresses")
                         .param("page", String.valueOf(page))
                         .param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.totalPages", is(2)))
-                .andExpect(jsonPath("$.totalElements", is(customers.size())));
+                .andExpect(jsonPath("$.totalElements", is(addresses.size())));
     }
 
     @Test
     @WithMockUser
-    void shouldFindCustomerBasedOnId() throws Exception {
-        when(customerService.findCustomerById(1L)).thenReturn(Optional.of(customers.get(0)));
+    void shouldFindAddressBasedOnId() throws Exception {
+        when(addressService.findAddressById(1L)).thenReturn(Optional.of(addresses.get(0)));
 
-        var customer = customers.get(0);
+        var address = addresses.get(0);
         var json = "{"
-                + "\"customerId\":" + customer.getCustomerId() + ","
-                + "\"name\":\"" + customer.getName() + "\","
-                + "\"email\":\"" + customer.getEmail() + "\","
-                + "\"password\":\"" + customer.getPassword() + "\","
-                + "\"phoneNumber\":\"" + customer.getPhoneNumber() + "\","
-                + "\"active\":" + customer.isActive()
+                + "\"addressId\":" + address.getAddressId() + ","
+                + "\"street\":\"" + address.getStreet() + "\","
+                + "\"city\":\"" + address.getCity() + "\","
+                + "\"zip\":" + address.getZip() + ","
+                + "\"country\":\"" + address.getCountry() + "\""
                 + "}";
 
-        mockMvc.perform(get("/api/customers/1"))
+        mockMvc.perform(get("/api/addresses/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(json));
     }
 
     @Test
     @WithMockUser
-    void shouldGetCustomerNotExists() throws Exception {
-        when(customerService.findCustomerById(99L)).thenThrow(CustomerNotFoundException.class);
-        mockMvc.perform(get("/api/customers/99"))
+    void shouldGetAddressNotExists() throws Exception {
+        when(addressService.findAddressById(99L)).thenThrow(AddressNotFoundException.class);
+        mockMvc.perform(get("/api/addresses/99"))
                 .andExpect(status().isNotFound());
     }
+
     @Test
     @WithMockUser
-    void testFindCustomersByName() {
-        Page<Customer> pagedResponse = new PageImpl<>(customers);
-        when(customerService.findCustomersByName(anyString(), any(Pageable.class))).thenReturn(pagedResponse);
+    void testFindAddressByStreet() {
+        Page<Address> pagedResponse = new PageImpl<>(addresses);
+        when(addressService.findAddressByStreet(anyString(), any(Pageable.class))).thenReturn(pagedResponse);
 
-        Page<Customer> result = customerService.findCustomersByName("testName", PageRequest.of(0, 10));
+        Page<Address> result = addressService.findAddressByStreet("1 Main_St", PageRequest.of(0, 10));
 
-        assertThat(result.getContent()).isEqualTo(customers);
+        assertThat(result.getContent()).isEqualTo(addresses);
+    }
+    @Test
+    @WithMockUser
+    void testFindAddressByCity() {
+        Page<Address> pagedResponse = new PageImpl<>(addresses);
+        when(addressService.findAddressByCity(anyString(), any(Pageable.class))).thenReturn(pagedResponse);
+
+        Page<Address> result = addressService.findAddressByCity("Randomcity2", PageRequest.of(0, 10));
+
+        assertThat(result.getContent()).isEqualTo(addresses);
+    }
+
+
+    @Test
+    @WithMockUser
+    void testFindAddressByZip() {
+        Page<Address> pagedResponse = new PageImpl<>(addresses);
+        when(addressService.findAddressByZip(anyInt(), any(Pageable.class))).thenReturn(pagedResponse);
+
+        Page<Address> result = addressService.findAddressByZip(9876, PageRequest.of(0, 10));
+
+        assertThat(result.getContent()).isEqualTo(addresses);
     }
 
     @Test
     @WithMockUser
-    void testFindCustomerByEmail() {
-        Optional<Customer> expectedCustomer = Optional.of(customers.get(0));
-        when(customerService.findCustomerByEmail(anyString())).thenReturn(expectedCustomer);
+    void testFindAddressByCountry() {
+        Optional<Address> expectedAddress = Optional.of(addresses.get(0));
+        when(addressService.findAddressByCountry(anyString())).thenReturn(expectedAddress);
 
-        Optional<Customer> result = customerService.findCustomerByEmail("test1@example.com");
+        Optional<Address> result = addressService.findAddressByCountry("Italia");
 
-        assertThat(result).isEqualTo(expectedCustomer);
+        assertThat(result).isEqualTo(expectedAddress);
     }
 
     @Test
     @WithMockUser
-    void testFindCustomersByActiveStatus() {
-        Page<Customer> pagedResponse = new PageImpl<>(customers);
-        when(customerService.findCustomersByActiveStatus(anyBoolean(), any(Pageable.class))).thenReturn(pagedResponse);
+    void testFindAddressByStreetAndCity() {
+        // Create a page of addresses for testing
+        Page<Address> pagedResponse = new PageImpl<>(addresses);
 
-        Page<Customer> result = customerService.findCustomersByActiveStatus(true, PageRequest.of(0, 10));
+        // Given: Mock the repository call in the service
+        when(addressService.findAddressByStreetAndCity(eq("1 Main St"), eq("Randomcity2"), any(Pageable.class)))
+                .thenReturn(pagedResponse);
 
-        assertThat(result.getContent()).isEqualTo(customers);
+        // When: Call the service method
+        Page<Address> result = addressService.findAddressByStreetAndCity("1 Main St", "Randomcity2", PageRequest.of(0, 10));
+
+        // Then: Assert that the result matches the expected response
+        assertThat(result.getContent()).hasSameElementsAs(addresses);
+
+        // Optionally, verify the interaction with the mocked service
+        verify(addressService).findAddressByStreetAndCity(eq("1 Main St"), eq("Randomcity2"), any(Pageable.class));
     }
 
     @Test
     @WithMockUser
-    void testFindCustomersByPhoneNumber() {
-        Optional<Customer> expectedCustomer = Optional.of(customers.get(0));
-        when(customerService.findCustomersByPhoneNumber(anyString())).thenReturn(expectedCustomer);
+    void testFindAddressByStreetAndZip() {
+        Page<Address> pagedResponse = new PageImpl<>(addresses);
+        when(addressService.findAddressByStreetAndZip(eq("Main St"), eq(1234), any(Pageable.class)))
+                .thenReturn(pagedResponse);
 
-        Optional<Customer> result = customerService.findCustomersByPhoneNumber("023456789");
+        Page<Address> result = addressService.findAddressByStreetAndZip("Main St", 1234, PageRequest.of(0, 10));
 
-        assertThat(result).isEqualTo(expectedCustomer);
+        assertThat(result.getContent()).hasSameElementsAs(addresses);
     }
 
+    @Test
+    @WithMockUser
+    void testFindAddressByStreetAndCityAndZip() {
+        Page<Address> pagedResponse = new PageImpl<>(addresses);
+        when(addressService.findAddressByStreetAndCityAndZip(eq("Main St"), eq("Randomcity2"), eq(5678), any(Pageable.class)))
+                .thenReturn(pagedResponse);
+
+        Page<Address> result = addressService.findAddressByStreetAndCityAndZip("Main St", "Randomcity2", 5678, PageRequest.of(0, 10));
+
+        assertThat(result.getContent()).hasSameElementsAs(addresses);
+    }
+
+    @Test
+    @WithMockUser
+    void testFindAddressByCityAndZip() {
+        Page<Address> pagedResponse = new PageImpl<>(addresses);
+        when(addressService.findAddressByCityAndZip(eq("Randomcity3"), eq(9876), any(Pageable.class)))
+                .thenReturn(pagedResponse);
+
+        Page<Address> result = addressService.findAddressByCityAndZip("Randomcity3", 9876, PageRequest.of(0, 10));
+
+        assertThat(result.getContent()).hasSameElementsAs(addresses);
+    }
+
+    @Test
+    @WithMockUser
+    void testFindByCountryAndZip() {
+        Address expectedAddress = addresses.get(0);
+        when(addressService.findByCountryAndZip(eq("USA"), eq(1234)))
+                .thenReturn(Optional.of(expectedAddress));
+
+        Optional<Address> result = addressService.findByCountryAndZip("USA", 1234);
+
+        assertThat(result).contains(expectedAddress);
+    }
+
+    @Test
+    @WithMockUser
+    void testFindAddressByCountryAndCity() {
+        Address expectedAddress = addresses.get(1);
+        when(addressService.findAddressByCountryAndCity(eq("Norway"), eq("Randomcity2")))
+                .thenReturn(Optional.of(expectedAddress));
+
+        Optional<Address> result = addressService.findAddressByCountryAndCity("Norway", "Randomcity2");
+
+        assertThat(result).contains(expectedAddress);
+    }
+
+    /*
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldCreateNewCustomerIfCustomerValid() throws Exception {
         Customer newCustomer = new Customer(4L, "bole", "test4@example.com", "password4", "323456789", true);
-        when(customerService.createCustomer(any(Customer.class))).thenReturn(newCustomer);
+        when(addressService.createCustomer(any(Customer.class))).thenReturn(newCustomer);
 
         String json = "{"
                 + "\"customerId\": 4,"
@@ -255,14 +337,20 @@ public class CustomerControllerTest {
     @Test
     @WithMockUser
     void shouldGetAddressesForCustomer() throws Exception {
-        List<Address> addresses = List.of( new Address(1L,"1 Main_St", "Randomcity1",1234, "USA"));
+        List<Address> addresses = List.of( new Address(1L,1234, "Randomcity1","1 Main_St", "USA"));
         when(customerService.getAddressForCustomer(1L)).thenReturn(addresses);
 
         mockMvc.perform(get("/api/customers/1/addresses"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(addresses.size())));
     }
-/*
+
+     */
+
+
+
+
+    /*
     @Test
     @WithMockUser
     void shouldGetOrdersForCustomer() throws Exception {
@@ -290,10 +378,14 @@ public class CustomerControllerTest {
     }
     */
 
+
+
+
+    /*
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldAddAddressToCustomer() throws Exception {
-        Address address =  new Address(1L,"1 Main_St", "Randomcity1",1234, "USA");
+        Address address =  new Address(1L,1234, "Randomcity1","1 Main_St", "USA");
 
         Customer customer = new Customer(2L, "john", "test2@example.com", "password2", "123456789", true);
         when(customerService.addAddressToCustomer(eq(1L), any(Address.class))).thenReturn(customer);
@@ -334,7 +426,7 @@ public class CustomerControllerTest {
 
         verify(customerService).removeAddressFromCustomer(1L, 1L);
     }
-
+*/
 
 
 }

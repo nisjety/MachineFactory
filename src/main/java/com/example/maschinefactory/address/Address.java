@@ -42,14 +42,14 @@ public class Address {
 
 
     // No-arg constructor for JPA
-    public Address(long addressId, String city, String street, int zip, String country) {
+    public Address() {
     }
 
-    public Address(long addressId, int zip, String street, String city, String country) {
+    public Address(long addressId, String street, String city,int zip, String country) {
         this.addressId = addressId;
-        this.zip = zip;
         this.street = street;
         this.city = city;
+        this.zip = zip;
         this.country = country;
     }
 
