@@ -20,5 +20,4 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     Page<Address> findByCityAndZip(String city, int zip, Pageable pageable) ;
     Optional<Address> findByCountryAndZip(String country, int zip) ;
     Optional<Address> findByCountryAndCity(String country, String city) ;
-
 }

@@ -229,24 +229,23 @@ public class AddressServiceTest {
         assertThat(result).contains(expectedAddress);
     }
 
-    /*
+
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldCreateNewCustomerIfCustomerValid() throws Exception {
-        Customer newCustomer = new Customer(4L, "bole", "test4@example.com", "password4", "323456789", true);
-        when(addressService.createCustomer(any(Customer.class))).thenReturn(newCustomer);
+    void shouldCreateNewAddressIfAddressValid() throws Exception {
+        Address newAddress = new Address(4L,"4 Main St", "Randomcity 4",5432, "Sverige");
+        when(addressService.createAddress(any(Address.class))).thenReturn(newAddress);
 
         String json = "{"
-                + "\"customerId\": 4,"
-                + "\"name\": \"bole\","
-                + "\"email\": \"test4@example.com\","
-                + "\"password\": \"password4\","
-                + "\"phoneNumber\": \"323456789\","
-                + "\"active\": true"
+                + "\"addressId\": 4,"
+                + "\"street\": \"4 Main st\","
+                + "\"city\": \"Randomcity 4\","
+                + "\"zip\": \"5432\","
+                + "\"country\": \"Sverige 4\""
                 + "}";
 
-        mockMvc.perform(post("/api/customers")
+        mockMvc.perform(post("/api/addresses")
                         .contentType("application/json")
                         .content(json))
                 .andExpect(status().isCreated());
@@ -254,18 +253,17 @@ public class AddressServiceTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldNotCreateCustomerIfInvalid() throws Exception {
+    void shouldNotCreateAddressIfAddressInValid() throws Exception {
         String json = """
             {
-                "customerId":"",
-                "name": "bole",
-                "email": "",
-                "password": "",
-                "phoneNumber": "323456789",
-                "active": true
+                "addressId":"",
+                "street": "main st 4",
+                "city": "randomcity 4",
+                "zip": "",
+                "country": "true"
             }
             """;
-        mockMvc.perform(post("/api/customers")
+        mockMvc.perform(post("/api/addresses")
                         .contentType("application/json")
                         .content(json))
                 .andExpect(status().isBadRequest());
@@ -273,8 +271,8 @@ public class AddressServiceTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldNotCreateCustomerIfEmpty() throws Exception {
-        mockMvc.perform(post("/api/customers")
+    void shouldNotCreateAddressIfEmpty() throws Exception {
+        mockMvc.perform(post("/api/addresses")
                         .contentType("application/json")
                         .content("{}"))
                 .andExpect(status().isBadRequest());
@@ -282,70 +280,39 @@ public class AddressServiceTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldUpdateCustomerIfValidInput() throws Exception {
-        Customer updatedCustomer = new Customer(2L, "john", "UpdatedTest2@example.com", "UpdatedPassword2", "Updated123456789", true);
-        when(customerService.updateCustomer(eq(2L), any(Customer.class))).thenReturn(updatedCustomer);
+    void shouldUpdateAddressIfValidInput() throws Exception {
+        Address existingAddress = new Address(3L, "3 Main St", "Randomcity3", 9876, "Italia");
+        Address updatedAddress = new Address(3L, "Updated 3 Main_St", "Updated Randomcity3", 9876, "Italia");
+        when(addressService.updateAddress(eq(3L), eq("Updated 3 Main_St"), eq("Updated Randomcity3"), eq(9876), eq("Italia")))
+                .thenReturn(updatedAddress);
 
         String json = "{"
-                + "\"customerId\": 2,"
-                + "\"name\": \"john\","
-                + "\"email\": \"UpdatedTest2@example.com\","
-                + "\"password\": \"UpdatedPassword2\","
-                + "\"phoneNumber\": \"Updated123456789\","
-                + "\"active\": true"
+                + "\"addressId\": 3,"
+                + "\"street\": \"Updated 3 Main_St\","
+                + "\"city\": \"Updated Randomcity3\","
+                + "\"zip\": 9876,"
+                + "\"country\": \"Italia\""
                 + "}";
 
-        mockMvc.perform(put("/api/customers/2")
+        mockMvc.perform(put("/api/addresses/3")
                         .contentType("application/json")
                         .content(json))
                 .andExpect(status().isAccepted());
     }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldDeleteCustomerIfCustomerEmailValid() throws Exception {
-        doNothing().when(customerService).deleteCustomer("test3@example.com", "password3");
 
-        mockMvc.perform(delete("/api/customers/test3@example.com")
-                        .param("password", "password3"))
-                .andExpect(status().isNoContent());
-    }
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldDeleteCustomerIfPasswordValid() throws Exception {
-        doNothing().when(customerService).deleteCustomer("test3@example.com", "password3");
 
-        mockMvc.perform(delete("/api/customers/test3@example.com")
-                        .param("password", "password3"))
-                .andExpect(status().isNoContent());
-
-        verify(customerService).deleteCustomer("test3@example.com", "password3");
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldNotDeleteCustomerIfPasswordInvalid() throws Exception {
-        doThrow(new InvalidPasswordException()).when(customerService).deleteCustomer("test3@example.com", "wrongPassword");
-
-        mockMvc.perform(delete("/api/customers/test3@example.com")
-                        .param("password", "wrongPassword"))
-                .andExpect(status().isUnauthorized());
-
-        verify(customerService).deleteCustomer("test3@example.com", "wrongPassword");
-    }
-
-    @Test
+        @Test
     @WithMockUser
-    void shouldGetAddressesForCustomer() throws Exception {
-        List<Address> addresses = List.of( new Address(1L,1234, "Randomcity1","1 Main_St", "USA"));
-        when(customerService.getAddressForCustomer(1L)).thenReturn(addresses);
+    void shouldGetCustomerFromAddress() throws Exception {
+        List<Customer> customers = List.of( new Customer(1L, "ole", "test1@example.com", "password", "023456789", true));
+        when(addressService.getCustomersFromAddress(1L)).thenReturn(customers);
 
-        mockMvc.perform(get("/api/customers/1/addresses"))
+        mockMvc.perform(get("/api/addresses/1/customers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(addresses.size())));
+                .andExpect(jsonPath("$", hasSize(customers.size())));
     }
 
-     */
 
 
 
@@ -380,53 +347,49 @@ public class AddressServiceTest {
 
 
 
-
-    /*
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldAddAddressToCustomer() throws Exception {
-        Address address =  new Address(1L,1234, "Randomcity1","1 Main_St", "USA");
+    void shouldAddCustomerToAddress() throws Exception {
+        Customer customer =  new Customer(1L, "ole", "test1@example.com", "password", "023456789", true);
 
-        Customer customer = new Customer(2L, "john", "test2@example.com", "password2", "123456789", true);
-        when(customerService.addAddressToCustomer(eq(1L), any(Address.class))).thenReturn(customer);
+        Address address = new Address(1L,"1 Main_St", "Randomcity1",1234, "USA");
+        when(addressService.addCustomerToAddress(eq(1L), any(Customer.class))).thenReturn(address);
 
-        String addressJson ="""
+        String customerJson ="""
     {
-        "addressId": 1,
-        "street": "123 Main St",
-        "city": "Anytown",
-        "zipCode": "12345",
-        "country": "USA"
+        "customerId": 1,
+        "name": "ole",
+        "email": "test1@example.com",
+        "password": "password",
+        "phoneNumber": "023456789",
+        "active": true
     }
     """;
-        mockMvc.perform(put("/api/customers/1/addresses")
+        mockMvc.perform(put("/api/addresses/1/customers")
                         .contentType("application/json")
-                        .content(addressJson))
+                        .content(customerJson))
                 .andExpect(status().isAccepted());
     }
 
     @Test
     @WithMockUser
-    void shouldRemoveOrderFromCustomer() throws Exception {
-        doNothing().when(customerService).removeOrderFromCustomer(1L, 1L);
+    void shouldRemoveOrderFromAddress() throws Exception {
+        doNothing().when(addressService).removeOrderFromAddress(1L, 1L);
 
-        mockMvc.perform(delete("/api/customers/1/orders/1"))
+        mockMvc.perform(delete("/api/addresses/1/orders/1"))
                 .andExpect(status().isNoContent());
 
-        verify(customerService).removeOrderFromCustomer(1L, 1L);
+        verify(addressService).removeOrderFromAddress(1L, 1L);
     }
 
     @Test
     @WithMockUser
-    void shouldRemoveAddressFromCustomer() throws Exception {
-        doNothing().when(customerService).removeAddressFromCustomer(1L, 1L);
+    void shouldRemoveCustomerFromAddress() throws Exception {
+        doNothing().when(addressService).removeCustomerFromAddress(2L, 1L);
 
-        mockMvc.perform(delete("/api/customers/1/addresses/1"))
+        mockMvc.perform(delete("/api/addresses/2/customers/1"))
                 .andExpect(status().isNoContent());
 
-        verify(customerService).removeAddressFromCustomer(1L, 1L);
+        verify(addressService).removeCustomerFromAddress(2L, 1L);
     }
-*/
-
-
 }

@@ -41,9 +41,11 @@ public class AddressController {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{addressId}")
-    Address updateAddress(@PathVariable Long addressId,String street, String city, int zip, String country, @RequestBody @Validated Address address) throws InvalidAddressDataException {
-        return addressService.updateAddress(addressId, street,  city,  zip, country);
+    Address updateAddress(@PathVariable Long addressId, @RequestBody @Validated Address address) throws InvalidAddressDataException {
+        return addressService.updateAddress(addressId, address.getStreet(), address.getCity(), address.getZip(), address.getCountry());
     }
+
+
 
     @GetMapping("/{addressId}/customers")
     public ResponseEntity<List<Customer>> getCustomersFromAddress(@PathVariable Long addressId) {
@@ -79,7 +81,7 @@ public class AddressController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{addressId}/customers/{customerId}")
     public ResponseEntity<?> removeCustomerFromAddress(@PathVariable Long addressId, @PathVariable Long customerId) {
-        addressService.removeOrderFromAddress(addressId, customerId);
+        addressService.removeCustomerFromAddress(addressId, customerId);
         return ResponseEntity.noContent().build();
 
     }

@@ -1,26 +1,27 @@
 package com.example.maschinefactory.address;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import com.example.maschinefactory.customer.Customer;
 import com.example.maschinefactory.order.Order;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
 @Entity
 @Table(name = "address")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long addressId;
+    private Long addressId;
 
-    @NotBlank(message = "Zip code cannot be blank")
+
+    @NotNull
     @Column(name = "Zip")
-    private int zip;
-
+    @Min(value = 1, message = "Zip code must be greater than 0")
+    private Integer zip;
 
     @NotBlank(message = "Street cannot be blank")
     @Column(name = "Street")
@@ -44,6 +45,10 @@ public class Address {
     // No-arg constructor for JPA
     public Address() {
     }
+
+    public Address(Long addressId, String street, String city, int zip, String country) {
+    }
+
 
     public Address(long addressId, String street, String city,int zip, String country) {
         this.addressId = addressId;

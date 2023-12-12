@@ -86,28 +86,21 @@ public class AddressService {
     }
     @Transactional
     public Address updateAddress(Long addressId, String street, String city, int zip, String country) throws InvalidAddressDataException {
-        if (addressValidation.validateAddressCredentials(addressId, street, city, zip, country)) {
-            Optional<Address> existing = addressRepository.findById(addressId);
-            if (existing.isPresent()) {
-                Address updated = new Address(
-                        existing.get().getAddressId(),
-                        existing.get().getStreet(),
-                        existing.get().getCity(),
-                        existing.get().getZip(),
-                        existing.get().getCountry()
-                );
-                return addressRepository.save(updated);
-            } else {
-                throw new AddressNotFoundException();
-            }
-        } else {
-            try {
-                throw new InvalidAddressDataException();
-            } catch (InvalidAddressDataException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        // Validate the address ID
+        addressValidation.validateExistingAddress(addressId);
+
+        // Validate the new address data
+        addressValidation.validateAddressData(new Address(addressId, street, city, zip, country));
+
+        return addressRepository.findById(addressId).map(existingAddress -> {
+            existingAddress.setStreet(street);
+            existingAddress.setCity(city);
+            existingAddress.setZip(zip);
+            existingAddress.setCountry(country);
+            return addressRepository.save(existingAddress);
+        }).orElseThrow(() -> new AddressNotFoundException());
     }
+
 
     public List<Customer> getCustomersFromAddress(Long addressId) {
         Optional<Address> address = addressRepository.findById(addressId);
