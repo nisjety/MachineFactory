@@ -35,13 +35,15 @@ class Machine {
 class Subassembly {
   - subassemblyId: Long
   - name: String
+  - description: String
   + List<Part> parts
 }
 
 class Part {
   - partId: Long
   - partName: String
-  - manufacturer: String
+  - description: String
+  +list: List<Subassembly>
 }
 
 Customer "1" -- "*" Address

@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +28,8 @@ public class CustomerService {
     }
 
 
-    public Optional<Customer> findCustomerById(Long id) {
-        return customerRepository.findById(id);
+    public Optional<Customer> findCustomerById(Long customerid) {
+        return customerRepository.findById(customerid);
     }
 
     public Page<Customer> findCustomersByName(String name, Pageable pageable) {
@@ -86,12 +85,12 @@ public class CustomerService {
         }
     }
 
-    @DeleteMapping("/{email}")
     public void deleteCustomer(String email, String password) {
         customerValidation.validateCustomerCredentials(email, password);
         customerRepository.deleteByEmail(email);
     }
 
+    @Transactional
     public List<Address> getAddressForCustomer(Long customerId) {
         Optional<Customer> customer = customerRepository.findById(customerId);
 
@@ -102,6 +101,7 @@ public class CustomerService {
         }
     }
 
+    @Transactional
     public List<Order> getOrdersForCustomer(Long customerId) {
         Optional<Customer> customer = customerRepository.findById(customerId);
 
@@ -111,7 +111,6 @@ public class CustomerService {
             throw new CustomerNotFoundException();
         }
     }
-
 
 
     @Transactional
