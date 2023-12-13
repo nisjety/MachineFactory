@@ -9,5 +9,5 @@ public class MaschineFactoryApplication {
     public static void main(String[] args) {
         SpringApplication.run(MaschineFactoryApplication.class, args);
     }
-
 }
+

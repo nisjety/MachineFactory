@@ -1,7 +1,6 @@
 package com.example.maschinefactory.customer;
 
 import com.example.maschinefactory.address.Address;
-import com.example.maschinefactory.address.InvalidAddressDataException;
 import com.example.maschinefactory.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

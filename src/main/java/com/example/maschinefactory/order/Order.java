@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Order {
 
