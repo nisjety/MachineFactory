@@ -1,4 +1,4 @@
-package com.example.maschinefactory;
+package com.example.maschinefactory.customerTest;
 
 import com.example.maschinefactory.address.*;
 import com.example.maschinefactory.customer.*;
@@ -60,7 +60,7 @@ public class CustomerControllerTest {
 
     @Test
     @WithMockUser
-    void shouldFindAllUsers() throws Exception {
+    void shouldFindAllCustomers() throws Exception {
         int page = 0;
         int size = 2;
         Pageable pageable = PageRequest.of(page, size);
@@ -243,7 +243,7 @@ public class CustomerControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldNotDeleteCustomerIfPasswordInvalid() throws Exception {
-        doThrow(new InvalidPasswordException()).when(customerService).deleteCustomer("test3@example.com", "wrongPassword");
+        doThrow(new InvalidPasswordException("wrong password")).when(customerService).deleteCustomer("test3@example.com", "wrongPassword");
 
         mockMvc.perform(delete("/api/customers/test3@example.com")
                         .param("password", "wrongPassword"))
@@ -334,7 +334,4 @@ public class CustomerControllerTest {
 
         verify(customerService).removeAddressFromCustomer(1L, 1L);
     }
-
-
-
 }

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.example.maschinefactory.address.Address;
 import com.example.maschinefactory.order.Order;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -40,6 +41,7 @@ public class Customer {
     @Column(name = "status")
     private boolean active;
 
+
     // No-arg constructor for JPA
     public Customer() {
     }
@@ -53,7 +55,7 @@ public class Customer {
         joinColumns = @JoinColumn(name = "customerId"),
         inverseJoinColumns = @JoinColumn(name = "addressId")
     )
-    private List<Address> addresses ;
+    private List<Address> addresses = new ArrayList<>();
 
     public Customer(long customerId, String name, String email, String password, String phoneNumber, boolean active) {
         this.customerId = customerId;

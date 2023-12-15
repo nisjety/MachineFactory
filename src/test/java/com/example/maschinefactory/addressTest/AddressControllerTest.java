@@ -1,8 +1,7 @@
-package com.example.maschinefactory;
+package com.example.maschinefactory.addressTest;
 
 import com.example.maschinefactory.address.*;
 import com.example.maschinefactory.customer.*;
-import com.example.maschinefactory.order.Order;
 import com.example.maschinefactory.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AddressController.class)
 @Import(SecurityConfig.class)
-public class AddressServiceTest {
+public class AddressControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

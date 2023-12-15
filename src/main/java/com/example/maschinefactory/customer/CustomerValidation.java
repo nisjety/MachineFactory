@@ -40,7 +40,7 @@ public class CustomerValidation {
 
 
     private boolean isStrongPassword(String password) {
-        String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%*^&,.+=])(?=\\S+$).{8,}$";
         // Explanation:
         // ^                 # start-of-string
         // (?=.*[0-9])       # a digit must occur at least once
@@ -50,9 +50,11 @@ public class CustomerValidation {
         // (?=\S+$)          # no whitespace allowed in the entire string
         // .{8,}             # anything, at least eight places though
         // $                 # end-of-string
-        return Pattern.matches(passwordRegex, password);
+        if (!Pattern.matches(passwordRegex, password)) {
+            throw new InvalidPasswordException("Password is not strong enough. It must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and be at least 8 characters long.");
+        }
+        return true;
     }
-
 
     public void validateExistingCustomer(Long customerId, Customer updatedCustomer) {
         // Validation logic for existing customer
@@ -64,7 +66,7 @@ public class CustomerValidation {
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(CustomerNotFoundException::new);
         if (!passwordHasher.checkPassword(password, customer.getPassword())) {
-            throw new InvalidPasswordException();
+            throw new InvalidPasswordException("wrong password");
         }
     }
 
@@ -72,7 +74,7 @@ public class CustomerValidation {
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(CustomerNotFoundException::new);
         if (!passwordHasher.checkPassword(password, customer.getPassword())) {
-            throw new InvalidPasswordException();
+            throw new InvalidPasswordException("wrong password");
         }
     }
 }

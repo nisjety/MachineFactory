@@ -1,6 +1,7 @@
 package com.example.maschinefactory.customer;
 
 import com.example.maschinefactory.address.Address;
+import com.example.maschinefactory.address.AddressNotFoundException;
 import com.example.maschinefactory.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +16,8 @@ import java.util.Optional;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
-
     private final CustomerValidation customerValidation;
+
 
     public CustomerService(CustomerRepository customerRepository, CustomerValidation customerValidation) {
         this.customerRepository = customerRepository;
@@ -28,8 +29,8 @@ public class CustomerService {
     }
 
 
-    public Optional<Customer> findCustomerById(Long customerid) {
-        return customerRepository.findById(customerid);
+    public Optional<Customer> findCustomerById(Long customerId) {
+        return customerRepository.findById(customerId);
     }
 
     public Page<Customer> findCustomersByName(String name, Pageable pageable) {
@@ -48,43 +49,33 @@ public class CustomerService {
         return customerRepository.findByPhoneNumber(phoneNumber);
     }
 
-    public Customer createCustomer(Customer customer) throws InvalidCustomerDataException {
+    @Transactional
+    public Customer createCustomer(Customer customer) {
         if (customerValidation.validateCustomerData(customer)) {
             return customerRepository.save(customer);
         } else {
             try {
-                throw new InvalidCustomerDataException();
+                throw new InvalidCustomerDataException("Missing customer details");
             } catch (InvalidCustomerDataException e) {
                 throw new RuntimeException(e);
             }
         }
     }
     @Transactional
-    public Customer updateCustomer(Long customerId, Customer customer) throws InvalidCustomerDataException {
-        if (customerValidation.validateCustomerData(customer)) {
-            Optional<Customer> existing = customerRepository.findById(customerId);
-            if (existing.isPresent()) {
-                Customer updated = new Customer(
-                        existing.get().getCustomerId(),
-                        existing.get().getName(),
-                        customer.getEmail(),
-                        customer.getPassword(),
-                        customer.getPhoneNumber(),
-                        existing.get().isActive()
-                );
-                return customerRepository.save(updated);
-            } else {
-                throw new CustomerNotFoundException();
-            }
-        } else {
-            try {
-                throw new InvalidCustomerDataException();
-            } catch (InvalidCustomerDataException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    public Customer updateCustomer(Long customerId, Customer updatedCustomerData) {
+        Customer existingCustomer = customerRepository.findById(customerId)
+                .orElseThrow(CustomerNotFoundException::new);
+
+        existingCustomer.setName(updatedCustomerData.getName());
+        existingCustomer.setEmail(updatedCustomerData.getEmail());
+        existingCustomer.setPassword(updatedCustomerData.getPassword());
+        existingCustomer.setPhoneNumber(updatedCustomerData.getPhoneNumber());
+        existingCustomer.setActive(updatedCustomerData.isActive());
+
+        return customerRepository.save(existingCustomer);
     }
 
+    @Transactional
     public void deleteCustomer(String email, String password) {
         customerValidation.validateCustomerCredentials(email, password);
         customerRepository.deleteByEmail(email);
@@ -112,6 +103,24 @@ public class CustomerService {
         }
     }
 
+    @Transactional
+    public Customer updateCustomerAddress(Long customerId, long addressId, Address updatedAddress) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(CustomerNotFoundException::new);
+
+        Address existingAddress = customer.getAddresses().stream()
+                .filter(address -> address.getAddressId() == addressId)
+                .findFirst()
+                .orElseThrow(() -> new AddressNotFoundException());
+
+        // Update the fields of the existing address
+        existingAddress.setStreet(updatedAddress.getStreet());
+        existingAddress.setCity(updatedAddress.getCity());
+        existingAddress.setZip(updatedAddress.getZip());
+        existingAddress.setCountry(updatedAddress.getCountry());
+
+        return customerRepository.save(customer);
+    }
 
     @Transactional
     public Customer addOrderToCustomer(Long customerId, Order order) {

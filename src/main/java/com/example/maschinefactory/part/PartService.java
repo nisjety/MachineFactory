@@ -18,23 +18,23 @@ public class PartService {
         this.partValidator = partValidator;
     }
 
-    Page<Part> findAllParts(Pageable pageable){
+    public Page<Part> findAllParts(Pageable pageable){
         return partRepository.findAll(pageable);
     }
 
-    Optional<Part> findPartById(Long partId){
+    public Optional<Part> findPartById(Long partId){
         return partRepository.findById(partId);
     }
 
-    Page<Part> findPartByPartName(String partName, Pageable pageable){
+    public Page<Part> findPartByPartName(String partName, Pageable pageable){
         return partRepository.findByPartName(partName, pageable);
     }
 
-    Optional<Part> findPartByDescription(String description){
+    public Optional<Part> findPartByDescription(String description){
         return partRepository.findByDescription(description);
     }
 
-    Part createPart(Part part) throws InvalidPartDataException{
+    public Part createPart(Part part) throws InvalidPartDataException{
         if(partValidator.validatePartData(part)){
             return partRepository.save(part);
         }else{
@@ -46,7 +46,7 @@ public class PartService {
         }
     }
 
-        Part updatePart(Long partId, Part part)throws InvalidPartDataException{
+        public Part updatePart(Long partId, Part part)throws InvalidPartDataException{
         if (partValidator.validatePartData(part)) {
             Optional<Part> existing = partRepository.findById(partId);
             if (existing.isPresent()) {

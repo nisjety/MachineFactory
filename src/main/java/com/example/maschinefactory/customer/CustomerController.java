@@ -1,12 +1,14 @@
 package com.example.maschinefactory.customer;
 
 import com.example.maschinefactory.address.Address;
+import com.example.maschinefactory.address.AddressNotFoundException;
 import com.example.maschinefactory.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -40,10 +42,11 @@ public class CustomerController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("")
-    Customer createCustomer(@RequestBody @Validated Customer customer) throws InvalidCustomerDataException {
+    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Customer createCustomer(@RequestBody @Validated Customer customer) throws InvalidCustomerDataException {
         return customerService.createCustomer(customer);
     }
+
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{customerId}")
@@ -66,6 +69,18 @@ public class CustomerController {
         List<Address> addresses = customerService.getAddressForCustomer(customerId);
         return ResponseEntity.ok(addresses);
     }
+
+    @PutMapping("/{customerId}/addresses/{addressId}")
+    public ResponseEntity<Address> updateCustomerAddress(@PathVariable Long customerId, @PathVariable Long addressId, @RequestBody Address address) {
+        Customer updatedCustomer = customerService.updateCustomerAddress(customerId, addressId, address);
+        Address updatedAddress = updatedCustomer.getAddresses().stream()
+                .filter(a -> a.getAddressId() == addressId)
+                .findFirst()
+                .orElseThrow(() -> new AddressNotFoundException());
+
+        return ResponseEntity.ok(updatedAddress);
+    }
+
 
     @GetMapping("/{customerId}/orders")
     public ResponseEntity<List<Order>> getOrdersForCustomer(@PathVariable Long customerId) {
