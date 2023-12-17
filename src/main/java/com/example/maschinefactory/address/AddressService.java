@@ -1,6 +1,7 @@
 package com.example.maschinefactory.address;
 
 import com.example.maschinefactory.customer.Customer;
+import com.example.maschinefactory.customer.CustomerNotFoundException;
 import com.example.maschinefactory.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -78,27 +79,24 @@ public class AddressService {
             return addressRepository.save(address);
         } else {
             try {
-                throw new InvalidAddressDataException();
+                throw new InvalidAddressDataException("");
             } catch (InvalidAddressDataException e) {
                 throw new RuntimeException(e);
             }
         }
     }
     @Transactional
-    public Address updateAddress(Long addressId, String street, String city, int zip, String country) throws InvalidAddressDataException {
-        // Validate the address ID
-        addressValidation.validateExistingAddress(addressId);
+    public Address updateAddress(Long addressId, Address updatedAddressData) {
+        Address existingAddress = addressRepository.findById(addressId)
+                .orElseThrow(AddressNotFoundException::new);
 
-        // Validate the new address data
-        addressValidation.validateAddressData(new Address(addressId, street, city, zip, country));
+        existingAddress.setStreet(updatedAddressData.getStreet());
+        existingAddress.setCity(updatedAddressData.getCity());
+        existingAddress.setZip(updatedAddressData.getZip());
+        existingAddress.setCountry(updatedAddressData.getCountry());
 
-        return addressRepository.findById(addressId).map(existingAddress -> {
-            existingAddress.setStreet(street);
-            existingAddress.setCity(city);
-            existingAddress.setZip(zip);
-            existingAddress.setCountry(country);
-            return addressRepository.save(existingAddress);
-        }).orElseThrow(() -> new AddressNotFoundException());
+
+        return addressRepository.save(existingAddress);
     }
 
 
@@ -134,7 +132,27 @@ public class AddressService {
     public Address addCustomerToAddress(Long addressId, Customer customer) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(AddressNotFoundException::new);
-        Address.getCustomers().add(customer);
+        address.getCustomers().add(customer);
+        return addressRepository.save(address);
+    }
+
+    @Transactional
+    public Address updateAddressForCustomer(Long addressId, long customerId, Customer updatedCustomer) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(AddressNotFoundException::new);
+
+        Customer existingCustomer = address.getCustomers().stream()
+                .filter(customer -> customer.getCustomerId() == customerId)
+                .findFirst()
+                .orElseThrow(() -> new CustomerNotFoundException());
+
+        // Update the fields of the existing customer
+        existingCustomer.setName(updatedCustomer.getName());
+        existingCustomer.setEmail(updatedCustomer.getEmail());
+        existingCustomer.setPassword(updatedCustomer.getPassword());
+        existingCustomer.setPhoneNumber(updatedCustomer.getPhoneNumber());
+        existingCustomer.setActive(updatedCustomer.isActive());
+
         return addressRepository.save(address);
     }
 
@@ -149,6 +167,6 @@ public class AddressService {
     public void removeCustomerFromAddress(Long addressId, long customerId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(AddressNotFoundException::new);
-        Address.getCustomers().removeIf(customer -> customer.getCustomerId() == customerId);
+        address.getCustomers().removeIf(customer -> customer.getCustomerId() == customerId);
     }
 }

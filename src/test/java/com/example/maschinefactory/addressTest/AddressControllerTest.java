@@ -280,10 +280,8 @@ public class AddressControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldUpdateAddressIfValidInput() throws Exception {
-        Address existingAddress = new Address(3L, "3 Main St", "Randomcity3", 9876, "Italia");
         Address updatedAddress = new Address(3L, "Updated 3 Main_St", "Updated Randomcity3", 9876, "Italia");
-        when(addressService.updateAddress(eq(3L), eq("Updated 3 Main_St"), eq("Updated Randomcity3"), eq(9876), eq("Italia")))
-                .thenReturn(updatedAddress);
+        when(addressService.updateAddress(eq(3L),  any(Address.class))).thenReturn(updatedAddress);
 
         String json = "{"
                 + "\"addressId\": 3,"

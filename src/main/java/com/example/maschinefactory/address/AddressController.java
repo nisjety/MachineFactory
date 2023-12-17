@@ -1,10 +1,12 @@
 package com.example.maschinefactory.address;
 
 import com.example.maschinefactory.customer.Customer;
+import com.example.maschinefactory.customer.CustomerNotFoundException;
 import com.example.maschinefactory.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +36,7 @@ public class AddressController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("")
+    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     Address createAddress(@RequestBody @Validated Address address) throws InvalidAddressDataException {
         return addressService.createAddress(address);
     }
@@ -42,7 +44,7 @@ public class AddressController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{addressId}")
     Address updateAddress(@PathVariable Long addressId, @RequestBody @Validated Address address) throws InvalidAddressDataException {
-        return addressService.updateAddress(addressId, address.getStreet(), address.getCity(), address.getZip(), address.getCountry());
+        return addressService.updateAddress(addressId, address);
     }
 
 
@@ -53,6 +55,7 @@ public class AddressController {
         return ResponseEntity.ok(customers);
     }
 
+    //change to page
     @GetMapping("/{addressId}/orders")
     public ResponseEntity<List<Order>> getOrdersForAddress(@PathVariable Long addressId) {
         List<Order> orders = addressService.getOrdersForAddress(addressId);
@@ -61,14 +64,14 @@ public class AddressController {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{addressId}/orders")
-    public void addOrderToAddress(@PathVariable Long addressId, Order order) {
-        Address address = addressService.addOrderToAddress(addressId, order);
+    public Address addOrderToAddress(@PathVariable Long addressId, Order order) {
+        return addressService.addOrderToAddress(addressId, order);
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{addressId}/customers")
-    public void addCustomerToAddress(@PathVariable Long addressId, Customer customer) {
-        Address address = addressService.addCustomerToAddress(addressId, customer);
+    public Address addCustomerToAddress(@PathVariable Long addressId, Customer customer) {
+        return addressService.addCustomerToAddress(addressId, customer);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -83,6 +86,16 @@ public class AddressController {
     public ResponseEntity<?> removeCustomerFromAddress(@PathVariable Long addressId, @PathVariable Long customerId) {
         addressService.removeCustomerFromAddress(addressId, customerId);
         return ResponseEntity.noContent().build();
+    }
 
+    @PutMapping("/{addressId}/customers/{customerId}")
+    public ResponseEntity<Customer> updateAddressForCustomer(@PathVariable Long addressId, @PathVariable Long customerId, @RequestBody Customer customer) {
+        Address updatedAddress = addressService.updateAddressForCustomer(addressId, customerId, customer);
+        Customer updatedCustomer = updatedAddress.getCustomers().stream()
+                .filter(a -> a.getCustomerId() == customerId)
+                .findFirst()
+                .orElseThrow(() -> new CustomerNotFoundException());
+
+        return ResponseEntity.ok(updatedCustomer);
     }
 }

@@ -7,6 +7,7 @@ import com.example.maschinefactory.customer.Customer;
 import com.example.maschinefactory.order.Order;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,7 +17,6 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long addressId;
-
 
     @NotNull
     @Column(name = "Zip")
@@ -35,11 +35,16 @@ public class Address {
     @Column(name = "country")
     private String country;
 
-    @ManyToMany(mappedBy = "addresses", fetch = FetchType.LAZY)
-    private static List<Customer> customers;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "address_customer",
+            joinColumns = @JoinColumn(name = "addressId"),
+            inverseJoinColumns = @JoinColumn(name = "customerId")
+    )
+    private List<Customer> customers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "deliveryAddress", fetch = FetchType.LAZY)
-    private List<Order> orders;
+    @OneToMany(mappedBy = "deliveryAddress", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Order> orders = new ArrayList<>();
 
 
     // No-arg constructor for JPA
@@ -47,10 +52,6 @@ public class Address {
     }
 
     public Address(Long addressId, String street, String city, int zip, String country) {
-    }
-
-
-    public Address(long addressId, String street, String city,int zip, String country) {
         this.addressId = addressId;
         this.street = street;
         this.city = city;
@@ -100,7 +101,7 @@ public class Address {
         this.country = country;
     }
 
-    public static List<Customer> getCustomers() {
+    public List<Customer> getCustomers() {
         return customers;
     }
 
@@ -115,7 +116,6 @@ public class Address {
     public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
-
 
     @Override
     public String toString() {

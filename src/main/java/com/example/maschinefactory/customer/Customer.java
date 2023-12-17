@@ -42,12 +42,10 @@ public class Customer {
     private boolean active;
 
 
-    // No-arg constructor for JPA
-    public Customer() {
-    }
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
+
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
@@ -56,6 +54,11 @@ public class Customer {
         inverseJoinColumns = @JoinColumn(name = "addressId")
     )
     private List<Address> addresses = new ArrayList<>();
+
+    // No-arg constructor for JPA
+    public Customer() {
+    }
+
 
     public Customer(long customerId, String name, String email, String password, String phoneNumber, boolean active) {
         this.customerId = customerId;
