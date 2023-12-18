@@ -1,5 +1,6 @@
 package com.example.maschinefactory.customer;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -47,12 +48,8 @@ public class Customer {
     private List<Order> orders = new ArrayList<>();
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-        name = "customer_address",
-        joinColumns = @JoinColumn(name = "customerId"),
-        inverseJoinColumns = @JoinColumn(name = "addressId")
-    )
+    @JsonIgnoreProperties("customers")
+    @ManyToMany(mappedBy = "customers")
     private List<Address> addresses = new ArrayList<>();
 
     // No-arg constructor for JPA

@@ -1,5 +1,6 @@
 package com.example.maschinefactory.address;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -35,11 +36,12 @@ public class Address {
     @Column(name = "country")
     private String country;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("addresses")
+    @ManyToMany
     @JoinTable(
-            name = "address_customer",
-            joinColumns = @JoinColumn(name = "addressId"),
-            inverseJoinColumns = @JoinColumn(name = "customerId")
+            name = "customer_address",
+            joinColumns = @JoinColumn(name = "address_id"),
+            inverseJoinColumns = @JoinColumn(name = "customer_id")
     )
     private List<Customer> customers = new ArrayList<>();
 
