@@ -14,20 +14,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Correctly configure in-memory authentication
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("admin")
-                .password("adminpass") // Replace with a secure password in production
-                .roles("ADMIN");
-    }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/h2-ui/**").permitAll()
-                        .requestMatchers("/api/**").hasRole("ADMIN") // Require 'ADMIN' role for /api/** endpoints
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults()); // HTTP Basic with default settings

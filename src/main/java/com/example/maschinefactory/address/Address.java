@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import com.example.maschinefactory.customer.Customer;
-import com.example.maschinefactory.order.Order;
+import com.example.maschinefactory.order.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class Address {
     private List<Customer> customers = new ArrayList<>();
 
     @OneToMany(mappedBy = "deliveryAddress", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Order> orders = new ArrayList<>();
+    private List<OrderEntity> orders = new ArrayList<>();
 
 
     // No-arg constructor for JPA
@@ -111,11 +111,11 @@ public class Address {
         this.customers = customers;
     }
 
-    public List<Order> getOrders() {
+    public List<OrderEntity> getOrders() {
         return orders;
     }
 
-    public void setOrders(List<Order> orders) {
+    public void setOrders(List<OrderEntity> orders) {
         this.orders = orders;
     }
 

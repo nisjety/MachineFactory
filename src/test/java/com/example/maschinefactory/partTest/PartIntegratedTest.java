@@ -51,20 +51,6 @@ public class PartIntegratedTest {
         //Create a new Part
         Part part = new Part(1L, "part1", "it does something");
 
-        // Check if the part's subassembly list is initialized, if not, initialize it
-        /*
-        if (part.getSubassemblies() == null) {
-            part.setSubassemblies(new ArrayList<>());
-        }
-
-        // Add the part to the subassembly list
-        part.getSubassemblies().add(subassembly);
-
-        // Save the subassembly and part to the repository
-        subassemblyRepository.save(subassembly);
-        partRepository.save(part);
-
-         */
     }
 
     @AfterEach

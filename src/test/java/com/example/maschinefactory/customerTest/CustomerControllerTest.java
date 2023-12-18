@@ -2,7 +2,7 @@ package com.example.maschinefactory.customerTest;
 
 import com.example.maschinefactory.address.*;
 import com.example.maschinefactory.customer.*;
-import com.example.maschinefactory.order.Order;
+import com.example.maschinefactory.order.*;
 import com.example.maschinefactory.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -262,33 +262,7 @@ public class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(addresses.size())));
     }
-/*
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldGetOrdersForCustomer() throws Exception {
-        List<Order> orders = List.of(new Order(order details));
-        when(customerService.getOrdersForCustomer(1L)).thenReturn(orders);
 
-        mockMvc.perform(get("/api/customers/1/orders"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(orders.size())));
-    }
-
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldAddOrderToCustomer() throws Exception {
-        Order order = new Order(order details );
-        Customer customer = new Customer(customer details);
-        when(customerService.addOrderToCustomer(eq(1L), any(Order.class))).thenReturn(customer);
-
-        String orderJson = JSON representation of order ;
-        mockMvc.perform(put("/api/customers/1/orders")
-                        .contentType("application/json")
-                        .content(orderJson))
-                .andExpect(status().isAccepted());
-    }
-    */
 
     @Test
     @WithMockUser(roles = "ADMIN")

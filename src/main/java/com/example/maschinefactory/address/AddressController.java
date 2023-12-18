@@ -1,8 +1,8 @@
 package com.example.maschinefactory.address;
 
-import com.example.maschinefactory.customer.Customer;
-import com.example.maschinefactory.customer.CustomerNotFoundException;
-import com.example.maschinefactory.order.Order;
+import com.example.maschinefactory.customer.*;
+import com.example.maschinefactory.order.*;
+import com.example.maschinefactory.order.OrderEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -57,15 +57,15 @@ public class AddressController {
 
     //change to page
     @GetMapping("/{addressId}/orders")
-    public ResponseEntity<List<Order>> getOrdersForAddress(@PathVariable Long addressId) {
-        List<Order> orders = addressService.getOrdersForAddress(addressId);
+    public ResponseEntity<List<OrderEntity>> getOrdersForAddress(@PathVariable Long addressId) {
+        List<OrderEntity> orders = addressService.getOrdersForAddress(addressId);
         return ResponseEntity.ok(orders);
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{addressId}/orders")
-    public Address addOrderToAddress(@PathVariable Long addressId, Order order) {
-        return addressService.addOrderToAddress(addressId, order);
+    public Address addOrderToAddress(@PathVariable Long addressId, OrderEntity orderEntity) {
+        return addressService.addOrderToAddress(addressId, orderEntity);
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)

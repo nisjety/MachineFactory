@@ -311,39 +311,6 @@ public class AddressControllerTest {
     }
 
 
-
-
-
-    /*
-    @Test
-     @WithMockUser(roles = "ADMIN")
-    void shouldGetOrdersForCustomer() throws Exception {
-        List<Order> orders = List.of(new Order(order details));
-        when(customerService.getOrdersForCustomer(1L)).thenReturn(orders);
-
-        mockMvc.perform(get("/api/customers/1/orders"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(orders.size())));
-    }
-
-
-    @Test
-     @WithMockUser(roles = "ADMIN")
-    void shouldAddOrderToCustomer() throws Exception {
-        Order order = new Order(order details );
-        Customer customer = new Customer(customer details);
-        when(customerService.addOrderToCustomer(eq(1L), any(Order.class))).thenReturn(customer);
-
-        String orderJson = JSON representation of order ;
-        mockMvc.perform(put("/api/customers/1/orders")
-                        .contentType("application/json")
-                        .content(orderJson))
-                .andExpect(status().isAccepted());
-    }
-    */
-
-
-
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldAddCustomerToAddress() throws Exception {

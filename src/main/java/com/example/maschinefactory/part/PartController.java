@@ -1,6 +1,6 @@
 package com.example.maschinefactory.part;
 
-import com.example.maschinefactory.subassembly.Subassembly;
+import com.example.maschinefactory.subassembly.*;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,27 +58,4 @@ public class PartController {
     void deletePart(@PathVariable Long partId) throws PartNotFoundException{
         partService.deletePart(partId);
     }
-
-    //Thinking that part you should be to look at a part and add it to a subassembly too and not only add parts from the subassembly handler
-    /*
-    @GetMapping("/{partId}/subassemblies")
-    public ResponseEntity<List<Subassembly>> getSubassemblyForPart(@PathVariable Long partId) {
-        List<Subassembly> subassembly = partService.getSubassemblyForPart(partId);
-        return ResponseEntity.ok(subassembly);
-    }
-
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @PutMapping("/{partId}/subassembly")
-    Part addPartToSubassembly(@PathVariable Long partId, @RequestBody Subassembly subassembly){
-        return partService.addPartToSubassembly(partId, subassembly);
-    }
-
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{partId}/subassembly")
-    public ResponseEntity<?> removePartFromSubassembly(@PathVariable Long partId, @PathVariable Long subassemblyId){
-        partService.removePartFromSubassembly(partId, subassemblyId);
-        return ResponseEntity.noContent().build();
-    }
-
-     */
 }

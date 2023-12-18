@@ -1,9 +1,8 @@
 package com.example.maschinefactory.part;
 
+import com.example.maschinefactory.subassembly.SubassemblyEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
 @Entity
@@ -18,6 +17,10 @@ public class Part {
         private String partName;
 
         private String description;
+
+        @ManyToOne(fetch = FetchType.EAGER)
+        @JoinColumn(name = "subassembly_id")
+        private SubassemblyEntity subassembly;
 
         // Default constructor for JPA
         public Part() {

@@ -2,7 +2,8 @@ package com.example.maschinefactory.address;
 
 import com.example.maschinefactory.customer.Customer;
 import com.example.maschinefactory.customer.CustomerNotFoundException;
-import com.example.maschinefactory.order.Order;
+import com.example.maschinefactory.order.*;
+import com.example.maschinefactory.order.OrderEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -110,7 +111,7 @@ public class AddressService {
         }
     }
 
-    public List<Order> getOrdersForAddress(Long addressId) {
+    public List<OrderEntity> getOrdersForAddress(Long addressId) {
         Optional<Address> address = addressRepository.findById(addressId);
 
         if (address.isPresent()) {
@@ -121,10 +122,10 @@ public class AddressService {
     }
 
     @Transactional
-    public Address addOrderToAddress(Long addressId, Order order) {
+    public Address addOrderToAddress(Long addressId, OrderEntity orderEntity) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(AddressNotFoundException::new);
-        address.getOrders().add(order);
+        address.getOrders().add(orderEntity);
         return addressRepository.save(address);
     }
 

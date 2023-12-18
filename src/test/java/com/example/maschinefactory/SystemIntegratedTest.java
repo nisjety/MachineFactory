@@ -2,11 +2,13 @@ package com.example.maschinefactory;
 
 import com.example.maschinefactory.address.*;
 import com.example.maschinefactory.customer.*;
+import com.example.maschinefactory.order.OrderEntity;
 import com.example.maschinefactory.part.*;
 import com.example.maschinefactory.security.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -52,6 +54,7 @@ public class SystemIntegratedTest {
 
         // Create a new address
         Address address = new Address(1L, "1 Main St", "Randomcity1", 1234, "USA");
+
 
         // Check if the address's customer list is initialized, if not, initialize it
         if (address.getCustomers() == null) {
@@ -126,11 +129,11 @@ public class SystemIntegratedTest {
                         .content(customerJson))
                 .andExpect(status().isAccepted());
     }
-    /*
+
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldAddCustomerToOrder() throws Exception {
-        Order order = new Order();
+        OrderEntity order = new OrderEntity();
         ObjectMapper objectMapper = new ObjectMapper();
         String orderJson = objectMapper.writeValueAsString(order);
 
@@ -140,7 +143,6 @@ public class SystemIntegratedTest {
                 .andExpect(status().isAccepted());
     }
 
-
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldRemoveCustomerFromOrder() throws Exception {
@@ -148,18 +150,5 @@ public class SystemIntegratedTest {
                 .andExpect(status().isNoContent());
     }
 
-       @Test
-    @WithMockUser(roles = "ADMIN")
-    public void shouldUpdateCustomerOrder() throws Exception {
-        Order updatedOrder = new Order(appropriate constructor parameters );
-    ObjectMapper objectMapper = new ObjectMapper();
-    String orderJson = objectMapper.writeValueAsString(updatedOrder);
 
-        mockMvc.perform(put("/api/customers/1/orders/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(orderJson))
-            .andExpect(status().isAccepted());
-    }
-
- */
 }
