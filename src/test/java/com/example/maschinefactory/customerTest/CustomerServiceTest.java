@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,6 +51,7 @@ public class CustomerServiceTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void ShouldFindAllCustomers() {
         Pageable pageable = Pageable.unpaged();
 
@@ -74,6 +76,7 @@ public class CustomerServiceTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void ShouldCreateNewCustomer() throws InvalidCustomerDataException {
         Customer customer = new Customer(4L, "ole", "ole@example.com", "password", "1234567890", true);
 
@@ -88,6 +91,7 @@ public class CustomerServiceTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void ShouldNotCreateCustomerAndThrowDataInvalid() {
         Customer customer = new Customer(2L, "boss", "boss@example.com", "", "0987654321", false);
 

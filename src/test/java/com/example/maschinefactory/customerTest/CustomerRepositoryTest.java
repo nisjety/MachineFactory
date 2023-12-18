@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +29,14 @@ public class CustomerRepositoryTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldReturnCustomerEmail() throws Exception {
         Optional<Customer> customer = customerRepository.findByEmail("test2@example.com");
         assertThat(customer).isNotNull();
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void testCustomerRepository() {
         Customer newCustomer = new Customer();
         newCustomer.setName("Test User");

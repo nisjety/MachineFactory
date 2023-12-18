@@ -47,7 +47,7 @@ public class PartControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldFindAllParts() throws Exception {
         int page =0;
         int size = 2;

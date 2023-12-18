@@ -51,9 +51,9 @@ public class PartService {
             Optional<Part> existing = partRepository.findById(partId);
             if (existing.isPresent()) {
                 Part updatedPart = new Part(
-                        existing.get().partId(),
-                        existing.get().partName(),
-                        part.description()
+                        existing.get().getPartId(),
+                        existing.get().getPartName(),
+                        part.getDescription()
                 );
                 return partRepository.save(updatedPart);
             } else {

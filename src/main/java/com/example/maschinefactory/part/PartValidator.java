@@ -13,7 +13,7 @@ public class PartValidator {
     }
 
     public boolean validatePartData(Part part) {
-        return !StringUtils.isEmpty(part.description());
+        return !StringUtils.isEmpty(part.getDescription());
     }
 
     public void validatePartCredentials(Long partId) {

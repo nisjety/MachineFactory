@@ -59,7 +59,7 @@ public class AddressControllerTest {
 
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldFindAllAddress() throws Exception {
         int page = 0;
         int size = 2;
@@ -78,7 +78,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldFindAddressBasedOnId() throws Exception {
         when(addressService.findAddressById(1L)).thenReturn(Optional.of(addresses.get(0)));
 
@@ -97,7 +97,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldGetAddressNotExists() throws Exception {
         when(addressService.findAddressById(99L)).thenThrow(AddressNotFoundException.class);
         mockMvc.perform(get("/api/addresses/99"))
@@ -105,7 +105,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindAddressByStreet() {
         Page<Address> pagedResponse = new PageImpl<>(addresses);
         when(addressService.findAddressByStreet(anyString(), any(Pageable.class))).thenReturn(pagedResponse);
@@ -115,7 +115,7 @@ public class AddressControllerTest {
         assertThat(result.getContent()).isEqualTo(addresses);
     }
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindAddressByCity() {
         Page<Address> pagedResponse = new PageImpl<>(addresses);
         when(addressService.findAddressByCity(anyString(), any(Pageable.class))).thenReturn(pagedResponse);
@@ -127,7 +127,7 @@ public class AddressControllerTest {
 
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindAddressByZip() {
         Page<Address> pagedResponse = new PageImpl<>(addresses);
         when(addressService.findAddressByZip(anyInt(), any(Pageable.class))).thenReturn(pagedResponse);
@@ -138,7 +138,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindAddressByCountry() {
         Optional<Address> expectedAddress = Optional.of(addresses.get(0));
         when(addressService.findAddressByCountry(anyString())).thenReturn(expectedAddress);
@@ -149,7 +149,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindAddressByStreetAndCity() {
         // Create a page of addresses for testing
         Page<Address> pagedResponse = new PageImpl<>(addresses);
@@ -169,7 +169,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindAddressByStreetAndZip() {
         Page<Address> pagedResponse = new PageImpl<>(addresses);
         when(addressService.findAddressByStreetAndZip(eq("Main St"), eq(1234), any(Pageable.class)))
@@ -181,7 +181,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindAddressByStreetAndCityAndZip() {
         Page<Address> pagedResponse = new PageImpl<>(addresses);
         when(addressService.findAddressByStreetAndCityAndZip(eq("Main St"), eq("Randomcity2"), eq(5678), any(Pageable.class)))
@@ -193,7 +193,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindAddressByCityAndZip() {
         Page<Address> pagedResponse = new PageImpl<>(addresses);
         when(addressService.findAddressByCityAndZip(eq("Randomcity3"), eq(9876), any(Pageable.class)))
@@ -205,7 +205,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindByCountryAndZip() {
         Address expectedAddress = addresses.get(0);
         when(addressService.findByCountryAndZip(eq("USA"), eq(1234)))
@@ -217,7 +217,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindAddressByCountryAndCity() {
         Address expectedAddress = addresses.get(1);
         when(addressService.findAddressByCountryAndCity(eq("Norway"), eq("Randomcity2")))
@@ -299,8 +299,8 @@ public class AddressControllerTest {
 
 
 
-        @Test
-    @WithMockUser
+    @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldGetCustomerFromAddress() throws Exception {
         List<Customer> customers = List.of( new Customer(1L, "ole", "test1@example.com", "password", "023456789", true));
         when(addressService.getCustomersFromAddress(1L)).thenReturn(customers);
@@ -316,7 +316,7 @@ public class AddressControllerTest {
 
     /*
     @Test
-    @WithMockUser
+     @WithMockUser(roles = "ADMIN")
     void shouldGetOrdersForCustomer() throws Exception {
         List<Order> orders = List.of(new Order(order details));
         when(customerService.getOrdersForCustomer(1L)).thenReturn(orders);
@@ -328,7 +328,7 @@ public class AddressControllerTest {
 
 
     @Test
-    @WithMockUser
+     @WithMockUser(roles = "ADMIN")
     void shouldAddOrderToCustomer() throws Exception {
         Order order = new Order(order details );
         Customer customer = new Customer(customer details);
@@ -369,7 +369,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldRemoveOrderFromAddress() throws Exception {
         doNothing().when(addressService).removeOrderFromAddress(1L, 1L);
 
@@ -380,7 +380,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldRemoveCustomerFromAddress() throws Exception {
         doNothing().when(addressService).removeCustomerFromAddress(2L, 1L);
 

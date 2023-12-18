@@ -59,7 +59,7 @@ public class CustomerControllerTest {
 
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldFindAllCustomers() throws Exception {
         int page = 0;
         int size = 2;
@@ -78,7 +78,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldFindCustomerBasedOnId() throws Exception {
         when(customerService.findCustomerById(1L)).thenReturn(Optional.of(customers.get(0)));
 
@@ -98,14 +98,14 @@ public class CustomerControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldGetCustomerNotExists() throws Exception {
         when(customerService.findCustomerById(99L)).thenThrow(CustomerNotFoundException.class);
         mockMvc.perform(get("/api/customers/99"))
                 .andExpect(status().isNotFound());
     }
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindCustomersByName() {
         Page<Customer> pagedResponse = new PageImpl<>(customers);
         when(customerService.findCustomersByName(anyString(), any(Pageable.class))).thenReturn(pagedResponse);
@@ -116,7 +116,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindCustomerByEmail() {
         Optional<Customer> expectedCustomer = Optional.of(customers.get(0));
         when(customerService.findCustomerByEmail(anyString())).thenReturn(expectedCustomer);
@@ -127,7 +127,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindCustomersByActiveStatus() {
         Page<Customer> pagedResponse = new PageImpl<>(customers);
         when(customerService.findCustomersByActiveStatus(anyBoolean(), any(Pageable.class))).thenReturn(pagedResponse);
@@ -138,7 +138,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void testFindCustomersByPhoneNumber() {
         Optional<Customer> expectedCustomer = Optional.of(customers.get(0));
         when(customerService.findCustomersByPhoneNumber(anyString())).thenReturn(expectedCustomer);
@@ -253,7 +253,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldGetAddressesForCustomer() throws Exception {
         List<Address> addresses = List.of( new Address(1L,"1 Main_St", "Randomcity1",1234, "USA"));
         when(customerService.getAddressForCustomer(1L)).thenReturn(addresses);
@@ -264,7 +264,7 @@ public class CustomerControllerTest {
     }
 /*
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldGetOrdersForCustomer() throws Exception {
         List<Order> orders = List.of(new Order(order details));
         when(customerService.getOrdersForCustomer(1L)).thenReturn(orders);
@@ -276,7 +276,7 @@ public class CustomerControllerTest {
 
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldAddOrderToCustomer() throws Exception {
         Order order = new Order(order details );
         Customer customer = new Customer(customer details);
@@ -314,7 +314,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldRemoveOrderFromCustomer() throws Exception {
         doNothing().when(customerService).removeOrderFromCustomer(1L, 1L);
 
@@ -325,7 +325,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldRemoveAddressFromCustomer() throws Exception {
         doNothing().when(customerService).removeAddressFromCustomer(1L, 1L);
 

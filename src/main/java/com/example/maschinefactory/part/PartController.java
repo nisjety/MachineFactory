@@ -41,7 +41,7 @@ public class PartController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/{partId}")
+    @PostMapping("")
     Part createPart(@RequestBody @Validated Part part) throws InvalidPartDataException {
         return partService.createPart(part);
     }

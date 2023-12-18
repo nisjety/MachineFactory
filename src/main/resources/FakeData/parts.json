@@ -1,0 +1,19 @@
+{
+  "parts": [
+    {
+      "partId": 1,
+      "partName": "part1",
+      "description": "it does something"
+    },
+    {
+      "partId": 2,
+      "partName": "part2",
+      "description": "it does nothing"
+    },
+    {
+      "partId": 3,
+      "partName": "part3",
+      "description": "it for a subassembly"
+    }
+  ]
+}
